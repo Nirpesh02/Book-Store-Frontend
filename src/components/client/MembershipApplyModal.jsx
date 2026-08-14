@@ -23,7 +23,7 @@ export default function MembershipApplyModal({ isOpen, onClose }) {
     const setUploading = side === 'front' ? setUploadingFront : setUploadingBack;
 
     setUploading(true);
-    const folderName = 'bookverse/Client profile picture';
+    const folderName = 'bookverse/membership';
 
     try {
       const sigData = await uploadAPI.getCloudinarySignature(folderName);
