@@ -129,7 +129,8 @@ export function AuthProvider({ children }) {
   const updateProfile = async (profileData) => {
     try {
       const updatedUser = await authAPI.updateProfile(profileData);
-      setCurrentUser({
+      setCurrentUser(prev => ({
+        ...prev,
         id: updatedUser._id,
         _id: updatedUser._id,
         name: updatedUser.name,
@@ -139,7 +140,10 @@ export function AuthProvider({ children }) {
         tier: updatedUser.tier,
         status: updatedUser.status,
         avatar: updatedUser.avatar,
-      });
+        membershipRequestStatus: updatedUser.membershipRequestStatus || prev?.membershipRequestStatus || 'None',
+        membershipNumber: updatedUser.membershipNumber || prev?.membershipNumber || null,
+        pointsBalance: updatedUser.pointsBalance || prev?.pointsBalance || 0,
+      }));
       return { success: true };
     } catch (error) {
       console.error('Update profile error:', error);
