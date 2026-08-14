@@ -202,6 +202,7 @@ export const membershipAPI = {
   getPendingRequests: () => apiRequest('/membership/requests'),
   approveRequest: (userId) => apiRequest(`/membership/approve/${userId}`, { method: 'POST' }),
   rejectRequest: (userId) => apiRequest(`/membership/reject/${userId}`, { method: 'POST' }),
+  removeMembership: (userId) => apiRequest(`/membership/remove/${userId}`, { method: 'POST' }),
 };
 
 // ==================== SETTINGS API ====================

@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { useAuth } from './AuthContext';
-import { booksAPI, customersAPI, transactionsAPI, reviewsAPI, settingsAPI, wishlistAPI } from '../api';
+import { booksAPI, customersAPI, transactionsAPI, reviewsAPI, settingsAPI, wishlistAPI, membershipAPI } from '../api';
 
 export const LibraryContext = createContext();
 
@@ -158,6 +158,24 @@ export function LibraryProvider({ children }) {
       setCustomers((prev) => prev.filter((p) => p._id !== customerId));
     } catch (error) {
       console.error('Error deleting customer:', error);
+      throw error;
+    }
+  };
+
+  const removeMembership = async (customerId) => {
+    try {
+      const result = await membershipAPI.removeMembership(customerId);
+      // Update local state — keep the customer but reset membership fields
+      setCustomers((prev) =>
+        prev.map((p) =>
+          p._id === customerId
+            ? { ...p, membershipNumber: '', tier: 'Standard', membershipRequestStatus: 'None' }
+            : p
+        )
+      );
+      return result;
+    } catch (error) {
+      console.error('Error removing membership:', error);
       throw error;
     }
   };
@@ -390,6 +408,7 @@ export function LibraryProvider({ children }) {
         registerCustomer,
         toggleCustomerStatus,
         deleteCustomer,
+        removeMembership,
         purchaseBook,
         requestRefund,
         approveRefund,

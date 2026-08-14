@@ -1,12 +1,19 @@
 import React, { useState } from 'react';
-import { Mail, Trash2, ShieldAlert, UserCheck, AlertTriangle, X } from 'lucide-react';
+import { Mail, Trash2, ShieldAlert, UserCheck, AlertTriangle, X, UserX, Crown } from 'lucide-react';
 import { useLibrary } from '../../context/LibraryContext';
 import { useAuth } from '../../context/AuthContext';
+import { useToast } from '../../context/ToastContext';
 
 export default function UserManagement() {
-  const { customers, searchQuery, toggleCustomerStatus, deleteCustomer } = useLibrary();
+  const { customers, searchQuery, toggleCustomerStatus, deleteCustomer, removeMembership } = useLibrary();
   const { currentUser } = useAuth();
-  const [customerToDelete, setCustomerToDelete] = useState(null);
+  const { addToast } = useToast();
+
+  // State: null = closed, customer object = open action picker
+  const [actionTarget, setActionTarget] = useState(null);
+  // 'account' or 'membership' — which confirmation is active
+  const [confirmType, setConfirmType] = useState(null);
+  const [processing, setProcessing] = useState(false);
 
   const filteredCustomers = customers.filter(
     (p) =>
@@ -15,16 +22,41 @@ export default function UserManagement() {
       (p.tier || '').toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const confirmDelete = async () => {
-    if (customerToDelete) {
-      try {
-        await deleteCustomer(customerToDelete._id || customerToDelete.id);
-      } catch (error) {
-        console.error('Error deleting customer:', error);
-      }
-      setCustomerToDelete(null);
+  const handleDeleteAccount = async () => {
+    if (!actionTarget) return;
+    setProcessing(true);
+    try {
+      await deleteCustomer(actionTarget._id || actionTarget.id);
+      addToast(`Account "${actionTarget.name}" deleted successfully.`, 'success');
+    } catch (error) {
+      addToast(error.message || 'Failed to delete account', 'error');
     }
+    setProcessing(false);
+    setConfirmType(null);
+    setActionTarget(null);
   };
+
+  const handleRemoveMembership = async () => {
+    if (!actionTarget) return;
+    setProcessing(true);
+    try {
+      await removeMembership(actionTarget._id || actionTarget.id);
+      addToast(`Membership removed for "${actionTarget.name}". Account is still active.`, 'success');
+    } catch (error) {
+      addToast(error.message || 'Failed to remove membership', 'error');
+    }
+    setProcessing(false);
+    setConfirmType(null);
+    setActionTarget(null);
+  };
+
+  const closeModal = () => {
+    if (processing) return;
+    setConfirmType(null);
+    setActionTarget(null);
+  };
+
+  const hasMembership = actionTarget?.membershipNumber || actionTarget?.membershipRequestStatus === 'Pending' || actionTarget?.membershipRequestStatus === 'Approved';
 
   return (
     <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm space-y-6">
@@ -99,9 +131,9 @@ export default function UserManagement() {
                 {currentUser?.adminType === 'permanent' && customer.role !== 'admin' && (
                   <button
                     type="button"
-                    onClick={() => setCustomerToDelete(customer)}
+                    onClick={() => setActionTarget(customer)}
                     className="p-1 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
-                    title="Remove Customer"
+                    title="Manage Customer"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
                   </button>
@@ -112,13 +144,85 @@ export default function UserManagement() {
         ))}
       </div>
 
-      {/* Delete Customer Confirmation Modal */}
-      {customerToDelete && (
+      {/* Action Picker Modal */}
+      {actionTarget && !confirmType && (
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex justify-center items-center z-50 p-4">
+          <div className="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl relative border border-slate-100 space-y-5">
+            <button
+              onClick={closeModal}
+              className="absolute right-5 top-5 text-slate-400 hover:text-slate-600 cursor-pointer"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <div className="space-y-1">
+              <h3 className="text-lg font-bold text-slate-800">Manage Customer</h3>
+              <p className="text-xs text-slate-500">
+                Choose an action for <strong className="text-slate-700">"{actionTarget.name}"</strong>
+              </p>
+            </div>
+
+            <div className="space-y-3">
+              {/* Delete Account Option */}
+              <button
+                type="button"
+                onClick={() => setConfirmType('account')}
+                className="w-full flex items-center gap-4 p-4 border-2 border-slate-100 rounded-2xl hover:border-rose-200 hover:bg-rose-50/50 transition-all cursor-pointer group/btn text-left"
+              >
+                <div className="p-3 bg-rose-50 group-hover/btn:bg-rose-100 rounded-xl transition-colors shrink-0">
+                  <UserX className="w-5 h-5 text-rose-600" />
+                </div>
+                <div>
+                  <p className="text-sm font-bold text-slate-800 group-hover/btn:text-rose-700 transition-colors">Delete Account</p>
+                  <p className="text-[11px] text-slate-400 leading-snug mt-0.5">
+                    Permanently remove this customer's entire account, including all data and order history.
+                  </p>
+                </div>
+              </button>
+
+              {/* Remove Membership Option */}
+              <button
+                type="button"
+                onClick={() => setConfirmType('membership')}
+                disabled={!hasMembership}
+                className={`w-full flex items-center gap-4 p-4 border-2 rounded-2xl transition-all text-left ${
+                  hasMembership
+                    ? 'border-slate-100 hover:border-amber-200 hover:bg-amber-50/50 cursor-pointer group/btn'
+                    : 'border-slate-100 bg-slate-50 opacity-50 cursor-not-allowed'
+                }`}
+              >
+                <div className={`p-3 rounded-xl transition-colors shrink-0 ${hasMembership ? 'bg-amber-50 group-hover/btn:bg-amber-100' : 'bg-slate-100'}`}>
+                  <Crown className={`w-5 h-5 ${hasMembership ? 'text-amber-600' : 'text-slate-400'}`} />
+                </div>
+                <div>
+                  <p className={`text-sm font-bold transition-colors ${hasMembership ? 'text-slate-800 group-hover/btn:text-amber-700' : 'text-slate-400'}`}>Remove Membership</p>
+                  <p className="text-[11px] text-slate-400 leading-snug mt-0.5">
+                    {hasMembership
+                      ? 'Revoke the premium membership only. The account will remain active with Standard tier.'
+                      : 'This customer does not have an active membership.'}
+                  </p>
+                </div>
+              </button>
+            </div>
+
+            <button
+              onClick={closeModal}
+              className="w-full py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-bold rounded-xl transition-all cursor-pointer"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Confirm Delete Account Modal */}
+      {actionTarget && confirmType === 'account' && (
         <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex justify-center items-center z-50 p-4">
           <div className="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl relative border border-slate-100 space-y-4">
             <button
-              onClick={() => setCustomerToDelete(null)}
-              className="absolute right-5 top-5 text-slate-400 hover:text-slate-600 cursor-pointer"
+              onClick={closeModal}
+              disabled={processing}
+              className="absolute right-5 top-5 text-slate-400 hover:text-slate-600 cursor-pointer disabled:opacity-50"
             >
               <X className="w-5 h-5" />
             </button>
@@ -127,25 +231,77 @@ export default function UserManagement() {
               <div className="p-3 bg-rose-50 rounded-2xl">
                 <AlertTriangle className="w-6 h-6" />
               </div>
-              <h3 className="text-lg font-bold text-slate-800">Remove Customer</h3>
+              <h3 className="text-lg font-bold text-slate-800">Delete Account</h3>
             </div>
 
             <p className="text-xs text-slate-500 leading-relaxed">
-              Are you sure you want to remove <strong className="text-slate-800">"{customerToDelete.name}"</strong> ({customerToDelete.email}) from the directory?
+              Are you sure you want to <strong className="text-rose-600">permanently delete</strong> the account of <strong className="text-slate-800">"{actionTarget.name}"</strong> ({actionTarget.email})? This action cannot be undone.
             </p>
 
             <div className="flex gap-3 pt-2">
               <button
-                onClick={() => setCustomerToDelete(null)}
-                className="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition-all cursor-pointer"
+                onClick={() => setConfirmType(null)}
+                disabled={processing}
+                className="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition-all cursor-pointer disabled:opacity-50"
               >
-                Cancel
+                Go Back
               </button>
               <button
-                onClick={confirmDelete}
-                className="flex-1 py-2.5 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-xl shadow-md shadow-rose-500/30 transition-all cursor-pointer active:scale-95"
+                onClick={handleDeleteAccount}
+                disabled={processing}
+                className="flex-1 py-2.5 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-xl shadow-md shadow-rose-500/30 transition-all cursor-pointer active:scale-95 disabled:opacity-50"
               >
-                Yes, Remove
+                {processing ? 'Deleting...' : 'Yes, Delete Account'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Confirm Remove Membership Modal */}
+      {actionTarget && confirmType === 'membership' && (
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex justify-center items-center z-50 p-4">
+          <div className="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl relative border border-slate-100 space-y-4">
+            <button
+              onClick={closeModal}
+              disabled={processing}
+              className="absolute right-5 top-5 text-slate-400 hover:text-slate-600 cursor-pointer disabled:opacity-50"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <div className="flex items-center gap-3 text-amber-600">
+              <div className="p-3 bg-amber-50 rounded-2xl">
+                <Crown className="w-6 h-6" />
+              </div>
+              <h3 className="text-lg font-bold text-slate-800">Remove Membership</h3>
+            </div>
+
+            <p className="text-xs text-slate-500 leading-relaxed">
+              This will <strong className="text-amber-600">revoke the premium membership</strong> of <strong className="text-slate-800">"{actionTarget.name}"</strong> ({actionTarget.email}). Their account will remain active but the tier will be reset to Standard.
+            </p>
+
+            {actionTarget.membershipNumber && (
+              <div className="flex items-center gap-2 p-2.5 bg-amber-50 border border-amber-200 rounded-xl">
+                <span className="text-xs text-amber-700 font-medium">Current ID:</span>
+                <span className="text-xs font-bold text-amber-800">👑 {actionTarget.membershipNumber}</span>
+              </div>
+            )}
+
+            <div className="flex gap-3 pt-2">
+              <button
+                onClick={() => setConfirmType(null)}
+                disabled={processing}
+                className="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition-all cursor-pointer disabled:opacity-50"
+              >
+                Go Back
+              </button>
+              <button
+                onClick={handleRemoveMembership}
+                disabled={processing}
+                className="flex-1 py-2.5 bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold rounded-xl shadow-md shadow-amber-500/30 transition-all cursor-pointer active:scale-95 disabled:opacity-50"
+              >
+                {processing ? 'Removing...' : 'Yes, Remove Membership'}
               </button>
             </div>
           </div>
