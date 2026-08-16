@@ -21,35 +21,36 @@ export default function ClientEthos() {
   ];
 
   return (
-    <div className="mb-16">
-      {/* Header */}
-      <div className="flex flex-col items-center justify-center mb-12 gap-4 text-center">
-        <div className="flex items-center gap-3">
-          <span className="text-[10px] font-bold text-[#c28453] tracking-widest uppercase">02</span>
-          <div className="w-8 h-[1px] bg-[#c28453]/40"></div>
-          <span className="text-[10px] font-bold text-stone-500 tracking-widest uppercase">Our Ethos</span>
-        </div>
-        <h2 className="text-3xl sm:text-4xl lg:text-5xl font-serif text-stone-900 tracking-tight">
-          The Bookstore, Redefined.
-        </h2>
-      </div>
-
-      {/* Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
-        {features.map((feature, idx) => (
-          <div key={idx} className="bg-[#fbfaf7] border border-stone-200/60 p-8 sm:p-10 rounded-sm h-full flex flex-col">
-            <div className="inline-flex items-center justify-center px-4 py-2 bg-[#f4ebd9] text-[#a0683a] rounded-full mb-8">
-              {feature.icon}
-            </div>
-            <h3 className="text-xl sm:text-2xl font-serif text-stone-900 mb-4">
-              {feature.title}
-            </h3>
-            <p className="text-sm text-stone-600 leading-relaxed">
-              {feature.description}
-            </p>
+    <section className="w-full bg-white py-20 border-y border-[#eadac2]/50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Header */}
+        <div className="flex flex-col items-center justify-center mb-16 gap-4 text-center">
+          <div className="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-[#f9f4ec] border border-[#eadac2] shadow-sm mb-2">
+            <span className="w-6 h-6 rounded-full bg-white flex items-center justify-center text-[10px] font-bold shadow-sm text-[#a0683a]">02</span>
+            <span className="text-[10px] font-bold tracking-[0.2em] uppercase font-sans pr-2 text-[#a0683a]">Our Ethos</span>
           </div>
-        ))}
+          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-serif text-[#3e2723] tracking-tight font-bold">
+            The Bookstore, Redefined.
+          </h2>
+        </div>
+
+        {/* Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12">
+          {features.map((feature, idx) => (
+            <div key={idx} className="bg-[#f9f4ec] border border-[#eadac2] p-8 sm:p-10 rounded-2xl h-full flex flex-col items-center text-center hover:-translate-y-1 hover:shadow-lg transition-all duration-300">
+              <div className="inline-flex items-center justify-center w-16 h-16 bg-[#f4ebd9] text-[#a0683a] rounded-full mb-6 shadow-sm border border-white">
+                {feature.icon}
+              </div>
+              <h3 className="text-2xl font-serif text-[#3e2723] mb-4 font-semibold">
+                {feature.title}
+              </h3>
+              <p className="text-sm sm:text-base text-[#6d5b53] leading-relaxed max-w-sm">
+                {feature.description}
+              </p>
+            </div>
+          ))}
+        </div>
       </div>
-    </div>
+    </section>
   );
 }

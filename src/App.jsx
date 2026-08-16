@@ -16,7 +16,6 @@ import UserManagement from './components/admin/UserManagement';
 import BorrowingHistory from './components/admin/BorrowingHistory';
 import AdminReviews from './components/admin/AdminReviews';
 import AddBookModal from './components/admin/AddBookModal';
-import AddPatronModal from './components/admin/AddPatronModal';
 import SubAdminManagement from './components/admin/SubAdminManagement';
 import MembershipRequests from './components/admin/MembershipRequests';
 import StoreSettings from './components/admin/StoreSettings';
@@ -44,7 +43,6 @@ function MainLayout() {
   // Admin Tabs & View mode
   const [adminTab, setAdminTab] = useState('dashboard');
   const [isBookModalOpen, setIsBookModalOpen] = useState(false);
-  const [isPatronModalOpen, setIsPatronModalOpen] = useState(false);
   const [viewMode, setViewMode] = useState(null); // 'admin' | 'client' | null (defaults to role)
 
   // Client Tabs
@@ -105,7 +103,6 @@ function MainLayout() {
 
           <Navbar
             onOpenAddBook={() => setIsBookModalOpen(true)}
-            onOpenAddPatron={() => setIsPatronModalOpen(true)}
           />
 
           <div className="flex-1 overflow-y-auto pr-2 pb-10">
@@ -122,7 +119,6 @@ function MainLayout() {
         </main>
 
         <AddBookModal isOpen={isBookModalOpen} onClose={() => setIsBookModalOpen(false)} />
-        <AddPatronModal isOpen={isPatronModalOpen} onClose={() => setIsPatronModalOpen(false)} />
         <ToastContainer />
       </div>
     );

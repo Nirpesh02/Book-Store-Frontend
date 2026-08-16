@@ -6,6 +6,9 @@ import BookCard from './BookCard';
 import ClientHero from './ClientHero';
 import ClientEthos from './ClientEthos';
 import ClientExperience from './ClientExperience';
+import ClientHeritage from './ClientHeritage';
+import ClientCommunity from './ClientCommunity';
+import ClientStatsChart from './ClientStatsChart';
 import ReligiousBooksSection from './ReligiousBooksSection';
 import FilterDrawer from './FilterDrawer';
 import ManagerMessage from './ManagerMessage';
@@ -75,142 +78,175 @@ export default function ClientCatalog({ currentUser, onSelectBook, onNavigateToS
     }
   };
 
+  // Get the newest book for the Hero section (prioritizing books marked as 'New')
+  const newReleaseBooks = books ? books.filter(b => b.isNewRelease) : [];
+  let newestBook = null;
+  
+  if (newReleaseBooks.length > 0) {
+    newestBook = [...newReleaseBooks].sort((a, b) => {
+        const idA = a._id || a.id || '';
+        const idB = b._id || b.id || '';
+        return idB.toString().localeCompare(idA.toString());
+    })[0];
+  } else if (books && books.length > 0) {
+    newestBook = [...books].sort((a, b) => {
+        const idA = a._id || a.id || '';
+        const idB = b._id || b.id || '';
+        return idB.toString().localeCompare(idA.toString());
+    })[0];
+  }
+
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-      {/* Home View Sections */}
+    <>
+      {/* Home View Sections - FULL WIDTH */}
       {clientTab === 'home' && (
-        <>
-          <ClientHero onExplore={onNavigateToDiscover} onStoryClick={onNavigateToStory} />
+        <div className="w-full flex flex-col">
+          <ClientHero onExplore={onNavigateToDiscover} onStoryClick={onNavigateToStory} newestBook={newestBook} />
           <ClientExperience onStoryClick={onNavigateToStory} />
           <ClientEthos />
-        </>
-      )}
-
-      {/* Discover View Sections */}
-      {clientTab === 'explore' && (
-        <div className="space-y-8">
-          {/* Top Banner for Discover Page */}
-          <div className="w-full py-12 sm:py-16 md:py-20 flex items-center justify-center">
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-serif text-[#3e2723] font-bold tracking-tight">
-              Bestselling Nepali Books
-            </h1>
-          </div>
-
-          <div id="catalog-section" className="space-y-8 mt-4">
-            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 pt-4">
-            <div>
-              <div className="flex items-center gap-3 mb-3">
-                <span className="text-[10px] font-bold text-[#c28453] tracking-widest uppercase">01</span>
-                <div className="w-8 h-[1px] bg-[#c28453]/40"></div>
-                <span className="text-[10px] font-bold text-stone-500 tracking-widest uppercase">Curated Catalog</span>
-              </div>
-              <h2 className="text-3xl sm:text-4xl font-serif text-stone-900 tracking-tight">
-                Explore Our Collection
-              </h2>
-              <p className="text-sm text-stone-500 mt-2 italic font-serif">
-                Showing {processedBooks.length} beautifully bound volumes
-              </p>
-            </div>
-            
-            <button
-              onClick={() => setIsDrawerOpen(true)}
-              className="flex items-center gap-2 px-6 py-2.5 bg-[#fcfaf7] border border-stone-200 text-stone-700 rounded-sm text-xs font-bold tracking-widest uppercase hover:bg-white hover:border-stone-300 transition-colors shadow-sm cursor-pointer"
-            >
-              <SlidersHorizontal className="w-4 h-4 text-[#c28453]" />
-              Filter & Sort
-            </button>
-          </div>
-
-          {/* Grid of Books */}
-          {processedBooks.length > 0 ? (
-            <div className="space-y-10">
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                {visibleBooks.map((book) => (
-                  <BookCard
-                    key={book._id || book.id}
-                    book={book}
-                    onSelect={onSelectBook}
-                    onPurchase={handlePurchase}
-                  />
-                ))}
+          <ClientHeritage />
+          <ClientCommunity />
+          <ClientStatsChart />
+          <ManagerMessage />
+          
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 w-full border-t border-slate-200 mt-16">
+            <h3 className="text-xl font-medium text-slate-800 mb-6 text-center sm:text-left">Payment Methods</h3>
+            <div className="flex flex-wrap items-center justify-center sm:justify-start gap-4">
+              {/* eSewa */}
+              <div className="h-14 px-8 bg-white border border-slate-200 rounded-xl flex items-center justify-center shadow-sm hover:shadow-md transition-all hover:border-[#60bb46]/30 cursor-pointer">
+                <div className="flex items-center text-[#60bb46]">
+                  <span className="bg-[#60bb46] text-white rounded-full w-6 h-6 flex items-center justify-center font-bold text-sm mr-1.5 shadow-inner">e</span>
+                  <span className="font-medium text-2xl tracking-tight">Sewa</span>
+                </div>
               </div>
               
-              {!showAllBooks && processedBooks.length > 8 && (
-                <div className="flex justify-center pt-2 pb-8">
-                  <button
-                    onClick={() => setShowAllBooks(true)}
-                    className="px-8 py-3 bg-[#c28453] text-white rounded-sm text-xs font-bold tracking-widest uppercase hover:bg-[#a0683a] transition-colors shadow-sm cursor-pointer"
-                  >
-                    See More
-                  </button>
+              {/* khalti by IME */}
+              <div className="h-14 px-8 bg-white border border-slate-200 rounded-xl flex items-center justify-center shadow-sm hover:shadow-md transition-all hover:border-[#df2028]/30 cursor-pointer relative">
+                <div className="flex flex-col items-end">
+                  <div className="flex items-start text-[#df2028]">
+                    <span className="font-bold text-2xl tracking-tighter lowercase">khalti</span>
+                    <Send className="w-4 h-4 ml-0.5 -mt-1 transform rotate-45" fill="currentColor" />
+                  </div>
+                  <span className="text-[9px] text-[#df2028] -mt-1 font-medium tracking-tight">by IME</span>
                 </div>
-              )}
-            </div>
-          ) : (
-            <div className="text-center py-20 bg-[#fbfaf7] border border-stone-200/60 rounded-sm flex flex-col items-center justify-center space-y-4">
-              <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mb-2 shadow-sm border border-stone-100">
-                <SlidersHorizontal className="w-6 h-6 text-[#c28453]" />
-              </div>
-              <p className="text-xl font-serif text-stone-900">No volumes found.</p>
-              <p className="text-sm text-stone-500">Try adjusting your filters or search query to discover a new story.</p>
-              <button 
-                onClick={() => {
-                  setSearchQuery('');
-                  setSelectedCategory('All');
-                  setInStockOnly(false);
-                }}
-                className="mt-6 px-6 py-2.5 bg-[#f4ebd9] text-[#a0683a] rounded-sm text-xs font-bold tracking-widest uppercase hover:bg-[#ebdcc2] transition-colors cursor-pointer"
-              >
-                Clear Filters
-              </button>
-            </div>
-          )}
-        </div>
-      </div>
-      )}
-
-      {/* Recommendation Section */}
-      {clientTab === 'explore' && (
-        <Recommendation 
-          currentUser={currentUser} 
-          onSelectBook={onSelectBook} 
-          onPurchaseBook={handlePurchase} 
-        />
-      )}
-
-      {/* Religious Books Section (Fifth) */}
-      {clientTab === 'explore' && (
-        <ReligiousBooksSection onSelectBook={onSelectBook} onPurchaseBook={handlePurchase} />
-      )}
-
-      {/* Manager Message Section */}
-      {clientTab === 'home' && <ManagerMessage />}
-
-      {/* Payment Methods Section */}
-      {clientTab === 'home' && (
-        <div className="mt-16 pt-8 border-t border-slate-200">
-          <h3 className="text-xl font-medium text-slate-800 mb-6 text-center sm:text-left">Payment Methods</h3>
-          <div className="flex flex-wrap items-center justify-center sm:justify-start gap-4">
-            {/* eSewa */}
-            <div className="h-14 px-8 bg-white border border-slate-200 rounded-xl flex items-center justify-center shadow-sm hover:shadow-md transition-all hover:border-[#60bb46]/30 cursor-pointer">
-              <div className="flex items-center text-[#60bb46]">
-                <span className="bg-[#60bb46] text-white rounded-full w-6 h-6 flex items-center justify-center font-bold text-sm mr-1.5 shadow-inner">e</span>
-                <span className="font-medium text-2xl tracking-tight">Sewa</span>
-              </div>
-            </div>
-            
-            {/* khalti by IME */}
-            <div className="h-14 px-8 bg-white border border-slate-200 rounded-xl flex items-center justify-center shadow-sm hover:shadow-md transition-all hover:border-[#df2028]/30 cursor-pointer relative">
-              <div className="flex flex-col items-end">
-                <div className="flex items-start text-[#df2028]">
-                  <span className="font-bold text-2xl tracking-tighter lowercase">khalti</span>
-                  <Send className="w-4 h-4 ml-0.5 -mt-1 transform rotate-45" fill="currentColor" />
-                </div>
-                <span className="text-[9px] text-[#df2028] -mt-1 font-medium tracking-tight">by IME</span>
               </div>
             </div>
           </div>
         </div>
+      )}
+
+      {/* Discover View Sections - CONSTRAINED WIDTH */}
+      {clientTab === 'explore' && (
+        <>
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 w-full">
+            <div className="space-y-8">
+              {/* Top Banner for Discover Page */}
+            <div className="relative w-full py-16 sm:py-20 md:py-24 rounded-[2rem] overflow-hidden mb-8 shadow-sm border border-[#eadac2] flex flex-col items-center justify-center text-center px-4 bg-[#f9f4ec]">
+              {/* Subtle background decoration */}
+              <div className="absolute top-[-20%] left-[-10%] w-72 h-72 bg-[#c28453] opacity-[0.03] rounded-full blur-3xl"></div>
+              <div className="absolute bottom-[-20%] right-[-10%] w-96 h-96 bg-[#8a5a44] opacity-[0.03] rounded-full blur-3xl"></div>
+              
+              <div className="relative z-10 max-w-3xl mx-auto space-y-5">
+                <div className="flex items-center justify-center gap-4 mb-2">
+                  <span className="w-8 sm:w-16 h-[1.5px] bg-[#c28453]/40"></span>
+                  <span className="text-[10px] sm:text-xs font-bold text-[#b0703f] tracking-[0.25em] uppercase font-sans">
+                    Discover The Magic of Words
+                  </span>
+                  <span className="w-8 sm:w-16 h-[1.5px] bg-[#c28453]/40"></span>
+                </div>
+                
+                <h1 className="text-4xl sm:text-5xl md:text-6xl font-serif text-[#3e2723] font-bold tracking-tight leading-[1.1] pb-2">
+                  Bestselling <span className="text-[#a0683a] italic font-medium">Nepali</span> Books
+                </h1>
+                
+                <p className="text-[#6d5b53] font-serif text-lg md:text-xl px-4 sm:px-12 leading-relaxed max-w-2xl mx-auto">
+                  Immerse yourself in our handpicked collection of timeless classics, captivating stories, and modern masterpieces that capture the true essence of Nepali literature.
+                </p>
+              </div>
+            </div>
+
+              <div id="catalog-section" className="space-y-8 mt-4">
+                <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 pt-4">
+                  <div>
+                    <div className="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-[#f9f4ec] border border-[#eadac2] shadow-sm mb-4">
+                      <span className="w-6 h-6 rounded-full bg-white flex items-center justify-center text-[10px] font-bold shadow-sm text-[#a0683a]">01</span>
+                      <span className="text-[10px] font-bold tracking-[0.2em] uppercase font-sans pr-2 text-[#a0683a]">Curated Catalog</span>
+                    </div>
+                    <h2 className="text-3xl sm:text-4xl font-serif text-[#3e2723] tracking-tight font-bold">
+                      Explore Our Collection
+                    </h2>
+                    <p className="text-sm text-stone-500 mt-2 italic font-serif">
+                      Showing {processedBooks.length} beautifully bound volumes
+                    </p>
+                  </div>
+                  
+                  <button
+                    onClick={() => setIsDrawerOpen(true)}
+                    className="flex items-center gap-2 px-6 py-3 bg-white border border-[#eadac2] text-[#3e2723] rounded-full text-xs font-bold tracking-[0.15em] uppercase hover:shadow-md hover:-translate-y-0.5 transition-all shadow-sm cursor-pointer"
+                  >
+                    <SlidersHorizontal className="w-4 h-4 text-[#a0683a]" />
+                    Filter & Sort
+                  </button>
+                </div>
+
+                {/* Grid of Books */}
+                {processedBooks.length > 0 ? (
+                  <div className="space-y-12">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                      {visibleBooks.map((book) => (
+                        <BookCard
+                          key={book._id || book.id}
+                          book={book}
+                          onSelect={onSelectBook}
+                          onPurchase={handlePurchase}
+                        />
+                      ))}
+                    </div>
+                    
+                    {!showAllBooks && processedBooks.length > 8 && (
+                      <div className="flex justify-center pt-2 pb-8">
+                        <button
+                          onClick={() => setShowAllBooks(true)}
+                          className="px-8 py-3.5 bg-[#3e2723] text-white rounded-full text-xs font-bold tracking-[0.15em] uppercase hover:bg-[#2c1f17] hover:shadow-lg hover:-translate-y-1 transition-all shadow-sm cursor-pointer"
+                        >
+                          See More
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div className="text-center py-20 bg-[#fcfaf7] border border-[#eadac2] rounded-[2rem] flex flex-col items-center justify-center space-y-5 shadow-sm">
+                    <div className="w-20 h-20 bg-[#f4ebd9] rounded-full flex items-center justify-center mb-2 shadow-sm border border-white">
+                      <SlidersHorizontal className="w-8 h-8 text-[#a0683a]" />
+                    </div>
+                    <p className="text-2xl font-serif text-[#3e2723] font-bold">No volumes found.</p>
+                    <p className="text-[#6d5b53] font-serif text-lg">Try adjusting your filters or search query to discover a new story.</p>
+                    <button 
+                      onClick={() => {
+                        setSearchQuery('');
+                        setSelectedCategory('All');
+                        setInStockOnly(false);
+                      }}
+                      className="mt-6 px-8 py-3.5 bg-white border border-[#eadac2] text-[#3e2723] rounded-full text-xs font-bold tracking-[0.15em] uppercase hover:bg-[#f9f4ec] transition-all shadow-sm cursor-pointer"
+                    >
+                      Clear Filters
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Recommendation Section */}
+          <Recommendation 
+            currentUser={currentUser} 
+            onSelectBook={onSelectBook} 
+            onPurchaseBook={handlePurchase} 
+          />
+
+          {/* Religious Books Section (Fifth) */}
+          <ReligiousBooksSection onSelectBook={onSelectBook} onPurchaseBook={handlePurchase} />
+        </>
       )}
 
       {/* Slide-Over Drawer */}
@@ -228,6 +264,6 @@ export default function ClientCatalog({ currentUser, onSelectBook, onNavigateToS
         categories={categories}
         resultsCount={processedBooks.length}
       />
-    </div>
+    </>
   );
 }
