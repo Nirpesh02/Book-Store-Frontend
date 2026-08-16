@@ -92,16 +92,14 @@ export default function UserManagement() {
                   <button
                     type="button"
                     onClick={() => toggleCustomerStatus(customer._id || customer.id)}
-                    title={customer.status === 'Pending' ? 'Click to Approve' : 'Click to toggle status'}
+                    title="Click to toggle status"
                     className={`text-xs px-2.5 py-1 rounded-full font-semibold cursor-pointer transition-all ${
                       customer.status === 'Active'
                         ? 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100'
-                        : customer.status === 'Pending'
-                        ? 'bg-amber-50 text-amber-600 hover:bg-amber-100 ring-1 ring-amber-400/50'
                         : 'bg-rose-50 text-rose-600 hover:bg-rose-100'
                     }`}
                   >
-                    {customer.status === 'Pending' ? 'Approve' : customer.status}
+                    {customer.status}
                   </button>
                 )}
               </div>

@@ -72,7 +72,7 @@ export default function LoginPage() {
         const newUser = await registerCustomer(name, email, password);
         if (newUser) {
           setActiveTab('client');
-          setSuccessMsg('Registration successful! Please wait for admin verification before logging in.');
+          setSuccessMsg('Registration successful! You can now log in.');
           setPassword('');
         }
       } else {
