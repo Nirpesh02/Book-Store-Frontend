@@ -42,6 +42,12 @@ export const authAPI = {
       body: JSON.stringify({ name, email, password }),
     }),
 
+  googleSignIn: (name, email, avatar) =>
+    apiRequest('/auth/google', {
+      method: 'POST',
+      body: JSON.stringify({ name, email, avatar }),
+    }),
+
   getMe: () => apiRequest('/auth/me'),
 
   updateProfile: (data) => 

@@ -88,29 +88,36 @@ export function AuthProvider({ children }) {
     }
   };
 
-  // Register Customer
-  const registerCustomer = async (name, email, password) => {
+
+
+  // Google Sign In
+  const googleLogin = async (name, email, avatar) => {
     setAuthError('');
     try {
-      const data = await authAPI.register(name, email, password);
-
-      // Do NOT log the user in automatically
-      // sessionStorage.setItem('bookverse_token', data.token);
-
-      const newUser = {
+      const data = await authAPI.googleSignIn(name, email, avatar);
+      
+      // Store token securely
+      sessionStorage.setItem('bookverse_token', data.token);
+      localStorage.setItem('bookverse_token', data.token);
+      
+      setCurrentUser({
         id: data._id,
         _id: data._id,
         name: data.name,
         email: data.email,
         role: data.role,
+        adminType: data.adminType,
         tier: data.tier,
         status: data.status,
-      };
+        avatar: data.avatar,
+        membershipRequestStatus: data.membershipRequestStatus || 'None',
+        membershipNumber: data.membershipNumber || null,
+        pointsBalance: data.pointsBalance || 0,
+      });
 
-      // setCurrentUser(newUser); // Do not set current user yet
-      return newUser;
+      return true;
     } catch (error) {
-      setAuthError(error.message || 'Registration failed!');
+      setAuthError(error.message || 'Google Sign-In failed!');
       return false;
     }
   };
@@ -180,7 +187,7 @@ export function AuthProvider({ children }) {
   }
 
   return (
-    <AuthContext.Provider value={{ currentUser, login, registerCustomer, logout, updateProfile, refreshUser, authError, setAuthError }}>
+    <AuthContext.Provider value={{ currentUser, login, googleLogin, logout, updateProfile, refreshUser, authError, setAuthError }}>
       {children}
     </AuthContext.Provider>
   );
