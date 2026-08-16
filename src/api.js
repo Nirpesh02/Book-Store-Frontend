@@ -1,5 +1,5 @@
 // API helper for connecting frontend to backend
-const API_BASE = 'https://book-store-backend-39qh.onrender.com/api';
+const API_BASE = 'http://localhost:5000/api';
 
 // Get stored token
 const getToken = () => sessionStorage.getItem('bookverse_token');
