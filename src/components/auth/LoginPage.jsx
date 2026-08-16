@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Mail, Lock, Eye, EyeOff, Key, BookOpen, X, ArrowLeft, Copy, Check } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { authAPI } from '../../api';
-import { auth, provider, signInWithPopup, signInWithRedirect, getRedirectResult } from '../../firebase';
+import { auth, provider, signInWithPopup } from '../../firebase';
 
 export default function LoginPage() {
   const { login, googleLogin, authError, setAuthError } = useAuth();
@@ -33,30 +33,6 @@ export default function LoginPage() {
     }
   }, []);
 
-  // Check for Redirect Result on mount (for mobile Google Login)
-  useEffect(() => {
-    const checkRedirect = async () => {
-      try {
-        const result = await getRedirectResult(auth);
-        if (result) {
-          setIsLoading(true);
-          const user = result.user;
-          const success = await googleLogin(
-            user.displayName,
-            user.email,
-            user.photoURL
-          );
-          if (!success) {
-            setIsLoading(false);
-          }
-        }
-      } catch (error) {
-        setAuthError('Google Sign-In failed during redirect.');
-        setIsLoading(false);
-      }
-    };
-    checkRedirect();
-  }, [googleLogin, setAuthError]);
 
   const handleTabChange = (tab) => {
     setActiveTab(tab);
@@ -131,30 +107,32 @@ export default function LoginPage() {
 
   const handleGoogleSignIn = async () => {
     try {
-      setIsLoading(true);
       setAuthError('');
+      // IMPORTANT: To prevent mobile browsers (like iOS Safari) from blocking the popup,
+      // the popup must be initiated IMMEDIATELY after the click action.
+      // We must avoid setting state (like setIsLoading(true)) before the popup opens.
+      const result = await signInWithPopup(auth, provider);
       
-      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || window.innerWidth < 768;
+      // Popup opened successfully, now we can show the loading spinner
+      setIsLoading(true);
       
-      if (isMobile) {
-        // Use redirect for mobile to prevent popup blockers and context switching issues
-        await signInWithRedirect(auth, provider);
-      } else {
-        const result = await signInWithPopup(auth, provider);
-        const user = result.user;
-        
-        const success = await googleLogin(
-          user.displayName,
-          user.email,
-          user.photoURL
-        );
+      const user = result.user;
+      const success = await googleLogin(
+        user.displayName,
+        user.email,
+        user.photoURL
+      );
 
-        if (!success) {
-          setIsLoading(false);
-        }
+      if (!success) {
+        setIsLoading(false);
       }
     } catch (error) {
-      setAuthError('Google Sign-In failed or was cancelled.');
+      console.error("Popup Initialization Error:", error);
+      if (error.code === 'auth/popup-closed-by-user') {
+        setAuthError('Sign-in cancelled by user.');
+      } else {
+        setAuthError(`Sign-in failed: ${error.code || error.message}`);
+      }
       setIsLoading(false);
     }
   };
