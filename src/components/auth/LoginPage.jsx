@@ -24,12 +24,23 @@ export default function LoginPage() {
   const [tempPassword, setTempPassword] = useState('');
   const [copied, setCopied] = useState(false);
 
-  // Restore remembered email on mount
+  // Restore remembered email on mount and check for verification status
   useEffect(() => {
     const savedEmail = localStorage.getItem('bookverse_remembered_email');
     if (savedEmail) {
       setEmail(savedEmail);
       setRememberMe(true);
+    }
+    
+    // Check for email verification status in URL
+    const query = new URLSearchParams(window.location.search);
+    const status = query.get('status');
+    if (status === 'success') {
+      setSuccessMsg('Email verified successfully! You can now sign in.');
+      window.history.replaceState({}, document.title, window.location.pathname);
+    } else if (status === 'error') {
+      setAuthError('Email verification failed or link expired. Please try again or contact support.');
+      window.history.replaceState({}, document.title, window.location.pathname);
     }
   }, []);
 
@@ -72,7 +83,7 @@ export default function LoginPage() {
         const newUser = await registerCustomer(name, email, password);
         if (newUser) {
           setActiveTab('client');
-          setSuccessMsg('Registration successful! You can now log in.');
+          setSuccessMsg('Registration successful! Please check your email inbox to verify your account before logging in.');
           setPassword('');
         }
       } else {
