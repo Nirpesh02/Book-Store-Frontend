@@ -56,6 +56,14 @@ function MainLayout() {
     return <PaymentSuccess onNavigateHome={() => window.location.href = '/'} />;
   }
 
+  // Email verification redirect handling: /login?status=success or /login?status=error
+  // Redirect to root so LoginPage renders properly with the query params preserved
+  if (window.location.pathname === '/login') {
+    const queryString = window.location.search; // e.g. ?status=success
+    window.location.replace('/' + queryString);
+    return null;
+  }
+
   // Reset view mode whenever user changes or logs out
   React.useEffect(() => {
     setViewMode(null);
