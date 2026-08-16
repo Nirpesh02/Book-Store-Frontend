@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Mail, Lock, Eye, EyeOff, Key, BookOpen, X, ArrowLeft, Copy, Check } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { authAPI } from '../../api';
-import { auth, provider, signInWithPopup } from '../../firebase';
+import { auth, provider, signInWithPopup, signInWithRedirect, getRedirectResult } from '../../firebase';
 
 export default function LoginPage() {
   const { login, googleLogin, authError, setAuthError } = useAuth();
@@ -32,6 +32,31 @@ export default function LoginPage() {
       setRememberMe(true);
     }
   }, []);
+
+  // Check for Redirect Result on mount (for mobile Google Login)
+  useEffect(() => {
+    const checkRedirect = async () => {
+      try {
+        const result = await getRedirectResult(auth);
+        if (result) {
+          setIsLoading(true);
+          const user = result.user;
+          const success = await googleLogin(
+            user.displayName,
+            user.email,
+            user.photoURL
+          );
+          if (!success) {
+            setIsLoading(false);
+          }
+        }
+      } catch (error) {
+        setAuthError('Google Sign-In failed during redirect.');
+        setIsLoading(false);
+      }
+    };
+    checkRedirect();
+  }, [googleLogin, setAuthError]);
 
   const handleTabChange = (tab) => {
     setActiveTab(tab);
@@ -108,17 +133,25 @@ export default function LoginPage() {
     try {
       setIsLoading(true);
       setAuthError('');
-      const result = await signInWithPopup(auth, provider);
-      const user = result.user;
       
-      const success = await googleLogin(
-        user.displayName,
-        user.email,
-        user.photoURL
-      );
+      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || window.innerWidth < 768;
+      
+      if (isMobile) {
+        // Use redirect for mobile to prevent popup blockers and context switching issues
+        await signInWithRedirect(auth, provider);
+      } else {
+        const result = await signInWithPopup(auth, provider);
+        const user = result.user;
+        
+        const success = await googleLogin(
+          user.displayName,
+          user.email,
+          user.photoURL
+        );
 
-      if (!success) {
-        setIsLoading(false);
+        if (!success) {
+          setIsLoading(false);
+        }
       }
     } catch (error) {
       setAuthError('Google Sign-In failed or was cancelled.');
