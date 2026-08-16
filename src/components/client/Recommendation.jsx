@@ -87,23 +87,31 @@ export default function Recommendation({ currentUser, onSelectBook, onPurchaseBo
   if (recommendedBooks.length === 0) return null;
 
   return (
-    <div className="mt-20 pt-12 border-t border-stone-200/60">
-      <div className="flex items-center gap-3 mb-8">
-        <span className="text-[10px] font-bold text-[#c28453] tracking-widest uppercase">Curated</span>
-        <div className="w-8 h-[1px] bg-[#c28453]/40"></div>
-        <h2 className="text-2xl sm:text-3xl font-serif text-stone-900 tracking-tight">
-          Recommended for You
-        </h2>
-      </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {recommendedBooks.map((book) => (
-          <BookCard
-            key={book._id || book.id}
-            book={book}
-            onSelect={onSelectBook}
-            onPurchase={onPurchaseBook}
-          />
-        ))}
+    <div className="w-full bg-[#fcfaf7] py-20 border-t border-[#eadac2]/50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex flex-col items-center justify-center mb-16 gap-4 text-center">
+          <div className="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-[#f9f4ec] border border-[#eadac2] shadow-sm mb-2">
+            <span className="w-6 h-6 rounded-full bg-white flex items-center justify-center text-[10px] font-bold shadow-sm text-[#a0683a]">★</span>
+            <span className="text-[10px] font-bold tracking-[0.2em] uppercase font-sans pr-2 text-[#a0683a]">Curated</span>
+          </div>
+          <h2 className="text-4xl sm:text-5xl font-serif text-[#3e2723] tracking-tight font-bold">
+            Recommended for <span className="italic text-[#a0683a] font-medium">You</span>
+          </h2>
+          <p className="text-[#6d5b53] font-serif text-lg max-w-2xl mx-auto mt-2">
+            Handpicked titles based on your reading history and wishlist.
+          </p>
+        </div>
+        
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          {recommendedBooks.map((book) => (
+            <BookCard
+              key={book._id || book.id}
+              book={book}
+              onSelect={onSelectBook}
+              onPurchase={onPurchaseBook}
+            />
+          ))}
+        </div>
       </div>
     </div>
   );

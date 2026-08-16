@@ -21,62 +21,62 @@ export default function FilterDrawer({
     <div className="fixed inset-0 z-50 overflow-hidden">
       {/* Backdrop */}
       <div 
-        className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity"
+        className="absolute inset-0 bg-[#3e2723]/30 backdrop-blur-sm transition-opacity"
         onClick={onClose}
       />
       
       {/* Drawer */}
       <div className="absolute inset-y-0 right-0 flex max-w-full pl-10 animate-[slideInRight_0.3s_ease-out]">
         <div className="w-screen max-w-md">
-          <div className="flex h-full flex-col bg-white shadow-2xl rounded-l-3xl border-l border-slate-100 overflow-hidden">
+          <div className="flex h-full flex-col bg-[#fcfaf7] shadow-[0_0_40px_rgba(62,39,35,0.1)] rounded-l-[2rem] border-l border-[#eadac2] overflow-hidden">
             
             {/* Header */}
-            <div className="px-6 py-6 border-b border-slate-100 flex items-center justify-between bg-slate-50">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-amber-100 text-amber-600 rounded-xl">
+            <div className="px-8 py-8 border-b border-[#eadac2]/60 flex items-center justify-between bg-white">
+              <div className="flex items-center gap-4">
+                <div className="w-10 h-10 bg-[#f4ebd9] text-[#a0683a] rounded-full flex items-center justify-center border border-[#eadac2]">
                   <SlidersHorizontal className="w-5 h-5" />
                 </div>
-                <h2 className="text-xl font-bold text-slate-800">Filter & Sort</h2>
+                <h2 className="text-2xl font-serif font-bold text-[#3e2723]">Filter & Sort</h2>
               </div>
               <button 
                 onClick={onClose}
-                className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-200 rounded-xl transition-colors cursor-pointer"
+                className="w-10 h-10 flex items-center justify-center text-[#6d5b53] hover:text-[#d32f2f] hover:bg-white border border-transparent hover:border-[#eadac2] rounded-full transition-all cursor-pointer shadow-sm bg-[#f9f4ec]"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             {/* Scrollable Content */}
-            <div className="flex-1 overflow-y-auto custom-scrollbar p-6 space-y-8">
+            <div className="flex-1 overflow-y-auto custom-scrollbar p-8 space-y-10">
               
               {/* Search */}
-              <div className="space-y-3">
-                <h3 className="text-sm font-bold text-slate-800 flex items-center gap-2">
-                  <Search className="w-4 h-4 text-slate-400" /> Search
+              <div className="space-y-4">
+                <h3 className="text-[10px] font-bold text-[#a0683a] uppercase tracking-widest flex items-center gap-2">
+                  <Search className="w-4 h-4" /> Search
                 </h3>
                 <input
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search by title or author..."
-                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all"
+                  className="w-full px-5 py-4 bg-white border border-[#eadac2] rounded-full text-sm font-medium text-[#3e2723] focus:outline-none focus:ring-2 focus:ring-[#c28453]/20 focus:border-[#c28453] transition-all placeholder:text-[#a0683a]/60 shadow-sm"
                 />
               </div>
 
               {/* Categories */}
-              <div className="space-y-3">
-                <h3 className="text-sm font-bold text-slate-800 flex items-center gap-2">
-                  <Filter className="w-4 h-4 text-slate-400" /> Categories
+              <div className="space-y-4">
+                <h3 className="text-[10px] font-bold text-[#a0683a] uppercase tracking-widest flex items-center gap-2">
+                  <Filter className="w-4 h-4" /> Categories
                 </h3>
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-3">
                   {categories.map((cat) => (
                     <button
                       key={cat}
                       onClick={() => setSelectedCategory(cat)}
-                      className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                      className={`px-5 py-2.5 rounded-full text-[11px] font-bold tracking-wider uppercase transition-all cursor-pointer ${
                         selectedCategory === cat
-                          ? 'bg-amber-500 text-white shadow-md shadow-amber-500/20'
-                          : 'bg-slate-50 border border-slate-200 text-slate-600 hover:bg-slate-100'
+                          ? 'bg-[#3e2723] text-white shadow-md'
+                          : 'bg-white border border-[#eadac2] text-[#6d5b53] hover:border-[#c28453] hover:text-[#c28453]'
                       }`}
                     >
                       {cat}
@@ -86,9 +86,11 @@ export default function FilterDrawer({
               </div>
 
               {/* Sort By */}
-              <div className="space-y-3">
-                <h3 className="text-sm font-bold text-slate-800">Sort By</h3>
-                <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-4">
+                <h3 className="text-[10px] font-bold text-[#a0683a] uppercase tracking-widest flex items-center gap-2">
+                  <SlidersHorizontal className="w-4 h-4" /> Sort By
+                </h3>
+                <div className="grid grid-cols-2 gap-4">
                   {[
                     { id: 'newest', label: 'Newest First' },
                     { id: 'popular', label: 'Most Popular' },
@@ -97,24 +99,24 @@ export default function FilterDrawer({
                     <button
                       key={option.id}
                       onClick={() => setSortOption(option.id)}
-                      className={`flex items-center justify-between px-4 py-3 rounded-xl border text-sm font-medium transition-all cursor-pointer ${
+                      className={`flex items-center justify-between px-5 py-4 rounded-3xl border text-[11px] font-bold uppercase tracking-wider transition-all cursor-pointer ${
                         sortOption === option.id
-                          ? 'border-amber-500 bg-amber-50 text-amber-700'
-                          : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
+                          ? 'border-[#c28453] bg-[#f4ebd9] text-[#a0683a] shadow-inner'
+                          : 'border-[#eadac2] bg-white text-[#6d5b53] hover:bg-[#f9f4ec]'
                       }`}
                     >
                       {option.label}
-                      {sortOption === option.id && <CheckCircle2 className="w-4 h-4 text-amber-500" />}
+                      {sortOption === option.id && <CheckCircle2 className="w-4 h-4 text-[#c28453]" />}
                     </button>
                   ))}
                 </div>
               </div>
 
               {/* Availability */}
-              <div className="space-y-3">
-                <h3 className="text-sm font-bold text-slate-800">Availability</h3>
-                <label className="flex items-center justify-between p-4 rounded-xl border border-slate-200 bg-white cursor-pointer hover:bg-slate-50 transition-colors">
-                  <span className="text-sm font-medium text-slate-700">In-Stock Only</span>
+              <div className="space-y-4">
+                <h3 className="text-[10px] font-bold text-[#a0683a] uppercase tracking-widest">Availability</h3>
+                <label className="flex items-center justify-between p-5 rounded-3xl border border-[#eadac2] bg-white cursor-pointer hover:bg-[#f9f4ec] transition-colors shadow-sm">
+                  <span className="text-xs font-bold text-[#3e2723] uppercase tracking-wider">In-Stock Only</span>
                   <div className="relative">
                     <input 
                       type="checkbox" 
@@ -122,8 +124,8 @@ export default function FilterDrawer({
                       checked={inStockOnly}
                       onChange={(e) => setInStockOnly(e.target.checked)}
                     />
-                    <div className={`block w-10 h-6 rounded-full transition-colors ${inStockOnly ? 'bg-amber-500' : 'bg-slate-200'}`}></div>
-                    <div className={`absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform ${inStockOnly ? 'translate-x-4' : ''}`}></div>
+                    <div className={`block w-12 h-7 rounded-full transition-colors ${inStockOnly ? 'bg-[#3e2723]' : 'bg-[#eadac2]'}`}></div>
+                    <div className={`absolute left-1 top-1 bg-white w-5 h-5 rounded-full transition-transform shadow-sm ${inStockOnly ? 'translate-x-5' : ''}`}></div>
                   </div>
                 </label>
               </div>
@@ -131,10 +133,10 @@ export default function FilterDrawer({
             </div>
 
             {/* Footer */}
-            <div className="p-6 border-t border-slate-100 bg-white">
+            <div className="p-8 border-t border-[#eadac2]/60 bg-white">
               <button 
                 onClick={onClose}
-                className="w-full py-3.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm rounded-xl transition-all shadow-lg shadow-slate-900/20 active:scale-95 cursor-pointer"
+                className="w-full py-4 bg-[#c28453] hover:bg-[#a0683a] text-white font-bold text-[11px] tracking-[0.2em] uppercase rounded-full transition-all shadow-xl hover:-translate-y-1 active:scale-95 cursor-pointer"
               >
                 Show {resultsCount} {resultsCount === 1 ? 'Result' : 'Results'}
               </button>

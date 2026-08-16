@@ -1,8 +1,8 @@
 import React from 'react';
-import { Search, Plus, UserPlus } from 'lucide-react';
+import { Search, Plus } from 'lucide-react';
 import { useLibrary } from '../../context/LibraryContext';
 
-export default function Navbar({ onOpenAddBook, onOpenAddPatron }) {
+export default function Navbar({ onOpenAddBook }) {
   const { searchQuery, setSearchQuery } = useLibrary();
 
   return (
@@ -25,14 +25,6 @@ export default function Navbar({ onOpenAddBook, onOpenAddPatron }) {
         >
           <Plus className="w-4 h-4" />
           <span>Add New Book</span>
-        </button>
-
-        <button
-          onClick={onOpenAddPatron}
-          className="flex items-center gap-2 bg-slate-800 hover:bg-slate-900 text-white text-sm font-medium px-5 py-3 rounded-2xl shadow-md transition-all active:scale-95"
-        >
-          <UserPlus className="w-4 h-4" />
-          <span>Register Customer</span>
         </button>
       </div>
     </header>
