@@ -205,7 +205,7 @@ export default function ClientNavbar({ clientTab, setClientTab, onLogout, curren
                   clientTab === 'profile' ? 'bg-amber-500 text-white' : 'bg-amber-100 text-amber-600'
                 }`}>
                   {currentUser?.avatar ? (
-                    <img src={currentUser.avatar} alt="Profile" className="w-full h-full object-cover" />
+                    <img src={currentUser.avatar} alt="Profile" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
                   ) : (
                     currentUser?.name ? currentUser.name[0].toUpperCase() : 'U'
                   )}

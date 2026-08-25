@@ -118,7 +118,7 @@ export default function UserProfile() {
           <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm flex flex-col items-center text-center space-y-4">
             <div className="w-24 h-24 bg-gradient-to-br from-amber-100 to-amber-200 rounded-full flex items-center justify-center border-4 border-white shadow-lg relative group">
               {formData.avatar ? (
-                <img src={formData.avatar} alt="Profile Avatar" className="w-full h-full rounded-full object-cover" />
+                <img src={formData.avatar} alt="Profile Avatar" className="w-full h-full rounded-full object-cover" referrerPolicy="no-referrer" />
               ) : (
                 <span className="text-4xl font-bold text-amber-700">
                   {currentUser?.name ? currentUser.name[0].toUpperCase() : 'U'}

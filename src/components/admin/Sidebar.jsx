@@ -79,7 +79,7 @@ export default function Sidebar({ activeTab, setActiveTab, currentUser, onLogout
         <div className="flex items-center gap-3 overflow-hidden">
           <div className="w-10 h-10 shrink-0 rounded-full bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold border border-amber-500/30 text-xs overflow-hidden">
             {currentUser?.avatar ? (
-              <img src={currentUser.avatar} alt="Profile" className="w-full h-full object-cover" />
+              <img src={currentUser.avatar} alt="Profile" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
             ) : (
               initials
             )}
