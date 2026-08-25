@@ -186,6 +186,12 @@ export const customersAPI = {
 
   delete: (id) =>
     apiRequest(`/customers/${id}`, { method: 'DELETE' }),
+
+  promote: (id) =>
+    apiRequest(`/customers/${id}/promote`, { method: 'PATCH' }),
+    
+  demote: (id) =>
+    apiRequest(`/customers/${id}/demote`, { method: 'PATCH' }),
 };
 
 // ==================== ADMINS API ====================

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, ShieldCheck, Upload, MapPin, Camera, AlertCircle } from 'lucide-react';
+import { X, ShieldCheck, Upload, MapPin, Camera, AlertCircle, Phone, Briefcase, Calendar } from 'lucide-react';
 import { membershipAPI, uploadAPI } from '../../api';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
@@ -11,16 +11,22 @@ export default function MembershipApplyModal({ isOpen, onClose }) {
   const [citizenshipFront, setCitizenshipFront] = useState('');
   const [citizenshipBack, setCitizenshipBack] = useState('');
   const [location, setLocation] = useState('');
+  const [phone, setPhone] = useState('');
+  const [profession, setProfession] = useState('');
+  const [dob, setDob] = useState('');
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
+  const [paymentScreenshot, setPaymentScreenshot] = useState('');
   const [uploadingFront, setUploadingFront] = useState(false);
   const [uploadingBack, setUploadingBack] = useState(false);
+  const [uploadingPayment, setUploadingPayment] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [locatingGPS, setLocatingGPS] = useState(false);
 
   if (!isOpen) return null;
 
   const uploadImage = async (file, side) => {
-    const setter = side === 'front' ? setCitizenshipFront : setCitizenshipBack;
-    const setUploading = side === 'front' ? setUploadingFront : setUploadingBack;
+    const setter = side === 'front' ? setCitizenshipFront : side === 'back' ? setCitizenshipBack : setPaymentScreenshot;
+    const setUploading = side === 'front' ? setUploadingFront : side === 'back' ? setUploadingBack : setUploadingPayment;
 
     setUploading(true);
     const folderName = 'bookverse/membership';
@@ -43,9 +49,11 @@ export default function MembershipApplyModal({ isOpen, onClose }) {
 
       if (data.secure_url) {
         setter(data.secure_url);
-        addToast(`Citizenship ${side} uploaded!`, 'success');
+        const name = side === 'payment' ? 'Payment screenshot' : `Citizenship ${side}`;
+        addToast(`${name} uploaded!`, 'success');
       } else {
-        addToast(`Failed to upload citizenship ${side}`, 'error');
+        const name = side === 'payment' ? 'payment screenshot' : `citizenship ${side}`;
+        addToast(`Failed to upload ${name}`, 'error');
       }
     } catch (error) {
       console.error('Upload error:', error);
@@ -94,8 +102,17 @@ export default function MembershipApplyModal({ isOpen, onClose }) {
     if (!citizenshipFront || !citizenshipBack) {
       return addToast('Please upload both front and back of your Citizenship.', 'error');
     }
+    if (!paymentScreenshot) {
+      return addToast('Please upload the payment screenshot.', 'error');
+    }
     if (!location.trim()) {
       return addToast('Please provide your location.', 'error');
+    }
+    if (!phone.trim()) {
+      return addToast('Please provide your phone number.', 'error');
+    }
+    if (!agreedToTerms) {
+      return addToast('You must agree to the Terms and Conditions.', 'error');
     }
 
     setSubmitting(true);
@@ -103,7 +120,11 @@ export default function MembershipApplyModal({ isOpen, onClose }) {
       await membershipAPI.apply({
         citizenshipFront,
         citizenshipBack,
+        paymentScreenshot,
         location: location.trim(),
+        phone: phone.trim(),
+        profession,
+        dob,
       });
       addToast('Membership application submitted successfully!', 'success');
       refreshUser();
@@ -141,7 +162,7 @@ export default function MembershipApplyModal({ isOpen, onClose }) {
         <div className="flex gap-3 p-3 bg-amber-50 border border-amber-200 rounded-xl mb-5">
           <AlertCircle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
           <p className="text-xs text-amber-700 leading-relaxed">
-            To verify your identity, please upload clear photos of both sides of your Citizenship document and provide your current location. All fields are <strong>compulsory</strong>.
+            To verify your identity, please upload clear photos of both sides of your Citizenship document, provide your current location, and a screenshot of the Rs. 500 membership fee payment. All fields marked with a green star (<span className="text-emerald-500 font-bold">*</span>) are <strong>compulsory</strong>.
           </p>
         </div>
 
@@ -150,7 +171,7 @@ export default function MembershipApplyModal({ isOpen, onClose }) {
           {/* Citizenship Front */}
           <div className="space-y-2">
             <label className="text-xs font-bold text-slate-600 uppercase tracking-wider flex items-center gap-1.5">
-              <Camera className="w-4 h-4 text-amber-600" /> Citizenship — Front Side *
+              <Camera className="w-4 h-4 text-amber-600" /> Citizenship — Front Side <span className="text-emerald-500 font-bold">*</span>
             </label>
             {citizenshipFront ? (
               <div className="relative group">
@@ -197,7 +218,7 @@ export default function MembershipApplyModal({ isOpen, onClose }) {
           {/* Citizenship Back */}
           <div className="space-y-2">
             <label className="text-xs font-bold text-slate-600 uppercase tracking-wider flex items-center gap-1.5">
-              <Camera className="w-4 h-4 text-amber-600" /> Citizenship — Back Side *
+              <Camera className="w-4 h-4 text-amber-600" /> Citizenship — Back Side <span className="text-emerald-500 font-bold">*</span>
             </label>
             {citizenshipBack ? (
               <div className="relative group">
@@ -227,24 +248,72 @@ export default function MembershipApplyModal({ isOpen, onClose }) {
                     <span className="text-xs text-slate-500 font-medium">Click to upload back side</span>
                   </>
                 )}
-                <input
-                  type="file"
-                  accept="image/*"
-                  className="hidden"
-                  onChange={(e) => {
-                    if (e.target.files[0]) uploadImage(e.target.files[0], 'back');
-                    e.target.value = '';
-                  }}
-                  disabled={uploadingBack}
-                />
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(e) => {
+                      if (e.target.files[0]) uploadImage(e.target.files[0], 'back');
+                      e.target.value = '';
+                    }}
+                    disabled={uploadingBack}
+                  />
+                </label>
+              )}
+            </div>
+
+            {/* Payment Screenshot */}
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-slate-600 uppercase tracking-wider flex items-center gap-1.5">
+                <Upload className="w-4 h-4 text-amber-600" /> Payment Screenshot (Rs. 500) <span className="text-emerald-500 font-bold">*</span>
               </label>
-            )}
-          </div>
+              {paymentScreenshot ? (
+                <div className="relative group">
+                  <img
+                    src={paymentScreenshot}
+                    alt="Payment Screenshot"
+                    className="w-full h-44 object-cover rounded-xl border border-slate-200"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setPaymentScreenshot('')}
+                    className="absolute top-2 right-2 bg-slate-900/70 text-white p-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              ) : (
+                <label className={`flex flex-col items-center justify-center w-full h-36 border-2 border-dashed rounded-xl cursor-pointer transition-all ${uploadingPayment ? 'border-amber-400 bg-amber-50' : 'border-slate-200 bg-slate-50 hover:border-amber-400 hover:bg-amber-50/50'}`}>
+                  {uploadingPayment ? (
+                    <div className="flex flex-col items-center gap-2">
+                      <div className="w-6 h-6 border-2 border-amber-500 border-t-transparent rounded-full animate-spin"></div>
+                      <span className="text-xs text-amber-600 font-semibold">Uploading...</span>
+                    </div>
+                  ) : (
+                    <>
+                      <Upload className="w-6 h-6 text-slate-400 mb-1" />
+                      <span className="text-xs text-slate-500 font-medium">Click to upload payment screenshot</span>
+                      <span className="text-[10px] text-slate-400 mt-1">Note: Please upload a clear screenshot of the payment</span>
+                    </>
+                  )}
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(e) => {
+                      if (e.target.files[0]) uploadImage(e.target.files[0], 'payment');
+                      e.target.value = '';
+                    }}
+                    disabled={uploadingPayment}
+                  />
+                </label>
+              )}
+            </div>
 
           {/* Location */}
           <div className="space-y-2">
             <label className="text-xs font-bold text-slate-600 uppercase tracking-wider flex items-center gap-1.5">
-              <MapPin className="w-4 h-4 text-amber-600" /> Your Location *
+              <MapPin className="w-4 h-4 text-amber-600" /> Your Location <span className="text-emerald-500 font-bold">*</span>
             </label>
             <div className="flex gap-2">
               <input
@@ -272,10 +341,72 @@ export default function MembershipApplyModal({ isOpen, onClose }) {
             <p className="text-[10px] text-slate-400 ml-1">Type your address manually or click the pin icon to auto-detect.</p>
           </div>
 
+          {/* Phone Number */}
+          <div className="space-y-2">
+            <label className="text-xs font-bold text-slate-600 uppercase tracking-wider flex items-center gap-1.5">
+              <Phone className="w-4 h-4 text-amber-600" /> Phone Number <span className="text-emerald-500 font-bold">*</span>
+            </label>
+            <input
+              type="tel"
+              placeholder="e.g. 98XXXXXXXX"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              required
+              className="w-full p-3 bg-slate-50 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500"
+            />
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            {/* Profession / Student */}
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-slate-600 uppercase tracking-wider flex items-center gap-1.5">
+                <Briefcase className="w-4 h-4 text-amber-600" /> Profession
+              </label>
+              <select
+                value={profession}
+                onChange={(e) => setProfession(e.target.value)}
+                className="w-full p-3 bg-slate-50 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500"
+              >
+                <option value="">Select Profession</option>
+                <option value="Student">Student</option>
+                <option value="Teacher">Teacher / Professor</option>
+                <option value="Professional">Professional</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+
+            {/* Date of Birth */}
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-slate-600 uppercase tracking-wider flex items-center gap-1.5">
+                <Calendar className="w-4 h-4 text-amber-600" /> Date of Birth
+              </label>
+              <input
+                type="date"
+                value={dob}
+                onChange={(e) => setDob(e.target.value)}
+                className="w-full p-3 bg-slate-50 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500"
+              />
+            </div>
+          </div>
+
+          {/* Terms and Conditions */}
+          <label className="flex items-start gap-3 p-3 bg-slate-50 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-100 transition-colors">
+            <input
+              type="checkbox"
+              checked={agreedToTerms}
+              onChange={(e) => setAgreedToTerms(e.target.checked)}
+              className="mt-1 w-4 h-4 text-amber-600 bg-white border-slate-300 rounded focus:ring-amber-500 focus:ring-2 cursor-pointer"
+              required
+            />
+            <span className="text-xs text-slate-600 leading-relaxed">
+              I agree to the <span className="text-amber-600 font-semibold hover:underline">Terms & Conditions</span>. I declare that the provided documents are genuine and I accept responsibility for any borrowed books.
+            </span>
+          </label>
+
           {/* Submit Button */}
           <button
             type="submit"
-            disabled={submitting || uploadingFront || uploadingBack || !citizenshipFront || !citizenshipBack || !location.trim()}
+            disabled={submitting || uploadingFront || uploadingBack || !citizenshipFront || !citizenshipBack || !location.trim() || !phone.trim() || !agreedToTerms}
             className="w-full py-3.5 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-bold text-sm rounded-xl shadow-lg shadow-amber-500/30 transition-all mt-2 cursor-pointer active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {submitting ? 'Submitting Application...' : 'Submit Membership Application'}

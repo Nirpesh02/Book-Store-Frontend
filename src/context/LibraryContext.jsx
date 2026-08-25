@@ -162,6 +162,36 @@ export function LibraryProvider({ children }) {
     }
   };
 
+  const promoteToSubAdmin = async (customerId) => {
+    try {
+      const updated = await customersAPI.promote(customerId);
+      setCustomers((prev) =>
+        prev.map((p) =>
+          p._id === customerId ? { ...p, role: updated.role, adminType: updated.adminType } : p
+        )
+      );
+      return updated;
+    } catch (error) {
+      console.error('Error promoting customer:', error);
+      throw error;
+    }
+  };
+
+  const demoteToCustomer = async (customerId) => {
+    try {
+      const updated = await customersAPI.demote(customerId);
+      setCustomers((prev) =>
+        prev.map((p) =>
+          p._id === customerId ? { ...p, role: updated.role, adminType: updated.adminType } : p
+        )
+      );
+      return updated;
+    } catch (error) {
+      console.error('Error demoting customer:', error);
+      throw error;
+    }
+  };
+
   const removeMembership = async (customerId) => {
     try {
       const result = await membershipAPI.removeMembership(customerId);
@@ -408,6 +438,8 @@ export function LibraryProvider({ children }) {
         registerCustomer,
         toggleCustomerStatus,
         deleteCustomer,
+        promoteToSubAdmin,
+        demoteToCustomer,
         removeMembership,
         purchaseBook,
         requestRefund,

@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { Mail, Trash2, ShieldAlert, UserCheck, AlertTriangle, X, UserX, Crown } from 'lucide-react';
+import { Mail, Trash2, ShieldAlert, UserCheck, AlertTriangle, X, UserX, Crown, ShieldCheck, Shield } from 'lucide-react';
 import { useLibrary } from '../../context/LibraryContext';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 
 export default function UserManagement() {
-  const { customers, searchQuery, toggleCustomerStatus, deleteCustomer, removeMembership } = useLibrary();
+  const { customers, searchQuery, toggleCustomerStatus, deleteCustomer, removeMembership, promoteToSubAdmin, demoteToCustomer } = useLibrary();
   const { currentUser } = useAuth();
   const { addToast } = useToast();
 
@@ -44,6 +44,34 @@ export default function UserManagement() {
       addToast(`Membership removed for "${actionTarget.name}". Account is still active.`, 'success');
     } catch (error) {
       addToast(error.message || 'Failed to remove membership', 'error');
+    }
+    setProcessing(false);
+    setConfirmType(null);
+    setActionTarget(null);
+  };
+
+  const handlePromote = async () => {
+    if (!actionTarget) return;
+    setProcessing(true);
+    try {
+      await promoteToSubAdmin(actionTarget._id || actionTarget.id);
+      addToast(`"${actionTarget.name}" promoted to Sub-Admin successfully.`, 'success');
+    } catch (error) {
+      addToast(error.message || 'Failed to promote to sub-admin', 'error');
+    }
+    setProcessing(false);
+    setConfirmType(null);
+    setActionTarget(null);
+  };
+
+  const handleDemote = async () => {
+    if (!actionTarget) return;
+    setProcessing(true);
+    try {
+      await demoteToCustomer(actionTarget._id || actionTarget.id);
+      addToast(`"${actionTarget.name}" demoted to Customer successfully.`, 'success');
+    } catch (error) {
+      addToast(error.message || 'Failed to demote to customer', 'error');
     }
     setProcessing(false);
     setConfirmType(null);
@@ -126,14 +154,14 @@ export default function UserManagement() {
                 {customer.role !== 'admin' && (
                   <span className="font-semibold text-slate-700">{customer.activeOrders || 0} Active Orders</span>
                 )}
-                {currentUser?.adminType === 'permanent' && customer.role !== 'admin' && (
+                {currentUser?.adminType === 'permanent' && (
                   <button
                     type="button"
                     onClick={() => setActionTarget(customer)}
-                    className="p-1 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
-                    title="Manage Customer"
+                    className="p-1 text-slate-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-colors cursor-pointer"
+                    title="Manage User"
                   >
-                    <Trash2 className="w-3.5 h-3.5" />
+                    <ShieldCheck className="w-4 h-4" />
                   </button>
                 )}
               </div>
@@ -161,6 +189,41 @@ export default function UserManagement() {
             </div>
 
             <div className="space-y-3">
+              {/* Promote / Demote Option */}
+              {actionTarget.role === 'admin' ? (
+                <button
+                  type="button"
+                  onClick={() => setConfirmType('demote')}
+                  className="w-full flex items-center gap-4 p-4 border-2 border-slate-100 rounded-2xl hover:border-amber-200 hover:bg-amber-50/50 transition-all cursor-pointer group/btn text-left"
+                >
+                  <div className="p-3 bg-amber-50 group-hover/btn:bg-amber-100 rounded-xl transition-colors shrink-0">
+                    <Shield className="w-5 h-5 text-amber-600" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold text-slate-800 group-hover/btn:text-amber-700 transition-colors">Demote to Customer</p>
+                    <p className="text-[11px] text-slate-400 leading-snug mt-0.5">
+                      Remove admin privileges and revert to a standard customer account.
+                    </p>
+                  </div>
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setConfirmType('promote')}
+                  className="w-full flex items-center gap-4 p-4 border-2 border-slate-100 rounded-2xl hover:border-emerald-200 hover:bg-emerald-50/50 transition-all cursor-pointer group/btn text-left"
+                >
+                  <div className="p-3 bg-emerald-50 group-hover/btn:bg-emerald-100 rounded-xl transition-colors shrink-0">
+                    <ShieldCheck className="w-5 h-5 text-emerald-600" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold text-slate-800 group-hover/btn:text-emerald-700 transition-colors">Promote to Sub-Admin</p>
+                    <p className="text-[11px] text-slate-400 leading-snug mt-0.5">
+                      Grant temporary admin privileges to help manage the store.
+                    </p>
+                  </div>
+                </button>
+              )}
+
               {/* Delete Account Option */}
               <button
                 type="button"
@@ -300,6 +363,92 @@ export default function UserManagement() {
                 className="flex-1 py-2.5 bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold rounded-xl shadow-md shadow-amber-500/30 transition-all cursor-pointer active:scale-95 disabled:opacity-50"
               >
                 {processing ? 'Removing...' : 'Yes, Remove Membership'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Confirm Promote Modal */}
+      {actionTarget && confirmType === 'promote' && (
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex justify-center items-center z-50 p-4">
+          <div className="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl relative border border-slate-100 space-y-4">
+            <button
+              onClick={closeModal}
+              disabled={processing}
+              className="absolute right-5 top-5 text-slate-400 hover:text-slate-600 cursor-pointer disabled:opacity-50"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <div className="flex items-center gap-3 text-emerald-600">
+              <div className="p-3 bg-emerald-50 rounded-2xl">
+                <ShieldCheck className="w-6 h-6" />
+              </div>
+              <h3 className="text-lg font-bold text-slate-800">Promote to Sub-Admin</h3>
+            </div>
+
+            <p className="text-xs text-slate-500 leading-relaxed">
+              Are you sure you want to promote <strong className="text-slate-800">"{actionTarget.name}"</strong> ({actionTarget.email}) to a Sub-Admin? They will gain access to the admin dashboard.
+            </p>
+
+            <div className="flex gap-3 pt-2">
+              <button
+                onClick={() => setConfirmType(null)}
+                disabled={processing}
+                className="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition-all cursor-pointer disabled:opacity-50"
+              >
+                Go Back
+              </button>
+              <button
+                onClick={handlePromote}
+                disabled={processing}
+                className="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl shadow-md shadow-emerald-500/30 transition-all cursor-pointer active:scale-95 disabled:opacity-50"
+              >
+                {processing ? 'Promoting...' : 'Yes, Promote'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Confirm Demote Modal */}
+      {actionTarget && confirmType === 'demote' && (
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex justify-center items-center z-50 p-4">
+          <div className="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl relative border border-slate-100 space-y-4">
+            <button
+              onClick={closeModal}
+              disabled={processing}
+              className="absolute right-5 top-5 text-slate-400 hover:text-slate-600 cursor-pointer disabled:opacity-50"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <div className="flex items-center gap-3 text-amber-600">
+              <div className="p-3 bg-amber-50 rounded-2xl">
+                <Shield className="w-6 h-6" />
+              </div>
+              <h3 className="text-lg font-bold text-slate-800">Demote to Customer</h3>
+            </div>
+
+            <p className="text-xs text-slate-500 leading-relaxed">
+              Are you sure you want to demote <strong className="text-slate-800">"{actionTarget.name}"</strong> ({actionTarget.email}) back to a Customer? They will lose access to the admin dashboard.
+            </p>
+
+            <div className="flex gap-3 pt-2">
+              <button
+                onClick={() => setConfirmType(null)}
+                disabled={processing}
+                className="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition-all cursor-pointer disabled:opacity-50"
+              >
+                Go Back
+              </button>
+              <button
+                onClick={handleDemote}
+                disabled={processing}
+                className="flex-1 py-2.5 bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold rounded-xl shadow-md shadow-amber-500/30 transition-all cursor-pointer active:scale-95 disabled:opacity-50"
+              >
+                {processing ? 'Demoting...' : 'Yes, Demote'}
               </button>
             </div>
           </div>

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { membershipAPI } from '../../api';
 import { useToast } from '../../context/ToastContext';
-import { ShieldCheck, XCircle, CheckCircle, Clock, MapPin, Eye, X, IdCard } from 'lucide-react';
+import { ShieldCheck, XCircle, CheckCircle, Clock, MapPin, Eye, X, IdCard, Phone, Briefcase, Calendar, Image } from 'lucide-react';
 
 export default function MembershipRequests() {
   const [requests, setRequests] = useState([]);
@@ -186,16 +186,26 @@ export default function MembershipRequests() {
             </div>
 
             {/* Client Info Summary */}
-            <div className="grid grid-cols-2 gap-4 mb-6">
-              <div className="bg-slate-50 p-4 rounded-xl border border-slate-100">
-                <p className="text-[10px] font-bold uppercase text-slate-400 tracking-wider mb-1">Current Tier</p>
-                <p className="text-sm font-bold text-slate-700">{selectedRequest.tier || 'Standard'}</p>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-6">
+              <div className="bg-slate-50 p-3 rounded-xl border border-slate-100">
+                <p className="text-[10px] font-bold uppercase text-slate-400 tracking-wider mb-1 flex items-center gap-1">
+                  <Phone className="w-3 h-3 text-amber-500" /> Phone
+                </p>
+                <p className="text-sm font-bold text-slate-700 truncate">{selectedRequest.phone || 'N/A'}</p>
               </div>
-              <div className="bg-slate-50 p-4 rounded-xl border border-slate-100">
-                <p className="text-[10px] font-bold uppercase text-slate-400 tracking-wider mb-1">Account Status</p>
-                <p className="text-sm font-bold text-slate-700">{selectedRequest.status}</p>
+              <div className="bg-slate-50 p-3 rounded-xl border border-slate-100">
+                <p className="text-[10px] font-bold uppercase text-slate-400 tracking-wider mb-1 flex items-center gap-1">
+                  <Briefcase className="w-3 h-3 text-amber-500" /> Profession
+                </p>
+                <p className="text-sm font-bold text-slate-700 truncate">{selectedRequest.profession || 'N/A'}</p>
               </div>
-              <div className="col-span-2 bg-slate-50 p-4 rounded-xl border border-slate-100">
+              <div className="bg-slate-50 p-3 rounded-xl border border-slate-100">
+                <p className="text-[10px] font-bold uppercase text-slate-400 tracking-wider mb-1 flex items-center gap-1">
+                  <Calendar className="w-3 h-3 text-amber-500" /> Date of Birth
+                </p>
+                <p className="text-sm font-bold text-slate-700 truncate">{selectedRequest.dob || 'N/A'}</p>
+              </div>
+              <div className="col-span-2 sm:col-span-3 bg-slate-50 p-3 rounded-xl border border-slate-100">
                 <p className="text-[10px] font-bold uppercase text-slate-400 tracking-wider mb-1 flex items-center gap-1">
                   <MapPin className="w-3 h-3 text-amber-500" /> Location
                 </p>
@@ -203,40 +213,58 @@ export default function MembershipRequests() {
               </div>
             </div>
 
-            {/* Citizenship Documents */}
+            {/* Documents */}
             <div className="mb-6">
               <h3 className="text-sm font-bold text-slate-700 flex items-center gap-2 mb-3">
-                <IdCard className="w-4 h-4 text-amber-500" /> Citizenship Documents
+                <IdCard className="w-4 h-4 text-amber-500" /> Uploaded Documents
               </h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
-                  <p className="text-xs font-semibold text-slate-500 mb-1.5">Front Side</p>
+                  <p className="text-xs font-semibold text-slate-500 mb-1.5">Citizenship Front</p>
                   {selectedRequest.citizenshipFront ? (
                     <a href={selectedRequest.citizenshipFront} target="_blank" rel="noopener noreferrer" className="block">
                       <img
                         src={selectedRequest.citizenshipFront}
                         alt="Citizenship Front"
-                        className="w-full h-48 object-cover rounded-xl border border-slate-200 hover:shadow-lg transition-shadow cursor-pointer"
+                        className="w-full h-32 object-cover rounded-xl border border-slate-200 hover:shadow-lg transition-shadow cursor-pointer"
                       />
                     </a>
                   ) : (
-                    <div className="w-full h-48 bg-slate-100 rounded-xl border border-slate-200 flex items-center justify-center text-xs text-slate-400">
+                    <div className="w-full h-32 bg-slate-100 rounded-xl border border-slate-200 flex items-center justify-center text-xs text-slate-400">
                       Not uploaded
                     </div>
                   )}
                 </div>
                 <div>
-                  <p className="text-xs font-semibold text-slate-500 mb-1.5">Back Side</p>
+                  <p className="text-xs font-semibold text-slate-500 mb-1.5">Citizenship Back</p>
                   {selectedRequest.citizenshipBack ? (
                     <a href={selectedRequest.citizenshipBack} target="_blank" rel="noopener noreferrer" className="block">
                       <img
                         src={selectedRequest.citizenshipBack}
                         alt="Citizenship Back"
-                        className="w-full h-48 object-cover rounded-xl border border-slate-200 hover:shadow-lg transition-shadow cursor-pointer"
+                        className="w-full h-32 object-cover rounded-xl border border-slate-200 hover:shadow-lg transition-shadow cursor-pointer"
                       />
                     </a>
                   ) : (
-                    <div className="w-full h-48 bg-slate-100 rounded-xl border border-slate-200 flex items-center justify-center text-xs text-slate-400">
+                    <div className="w-full h-32 bg-slate-100 rounded-xl border border-slate-200 flex items-center justify-center text-xs text-slate-400">
+                      Not uploaded
+                    </div>
+                  )}
+                </div>
+                <div>
+                  <p className="text-xs font-semibold text-emerald-600 mb-1.5 flex items-center gap-1">
+                    <Image className="w-3 h-3" /> Payment (Rs. 500)
+                  </p>
+                  {selectedRequest.paymentScreenshot ? (
+                    <a href={selectedRequest.paymentScreenshot} target="_blank" rel="noopener noreferrer" className="block">
+                      <img
+                        src={selectedRequest.paymentScreenshot}
+                        alt="Payment Screenshot"
+                        className="w-full h-32 object-cover rounded-xl border border-emerald-200 hover:shadow-lg transition-shadow cursor-pointer"
+                      />
+                    </a>
+                  ) : (
+                    <div className="w-full h-32 bg-slate-100 rounded-xl border border-slate-200 flex items-center justify-center text-xs text-slate-400">
                       Not uploaded
                     </div>
                   )}

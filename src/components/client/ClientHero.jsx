@@ -12,7 +12,6 @@ export default function ClientHero({ onExplore, onStoryClick, newestBook }) {
         {/* Left Content */}
         <div className="flex flex-col items-start space-y-8 max-w-2xl">
           <div className="inline-flex items-center gap-3 px-5 py-2.5 rounded-full bg-white border border-[#eadac2] shadow-sm">
-            <span className="flex h-2.5 w-2.5 rounded-full bg-[#c28453] animate-pulse"></span>
             <span className="text-xs font-bold tracking-[0.2em] text-[#a0683a] uppercase font-sans">Welcome to Kitabghar</span>
           </div>
 

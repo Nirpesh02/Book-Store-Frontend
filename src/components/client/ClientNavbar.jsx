@@ -37,42 +37,43 @@ export default function ClientNavbar({ clientTab, setClientTab, onLogout, curren
 
   return (
     <header className="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16 sm:h-20">
+      <div className="w-full px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-24 sm:h-28 gap-4">
           
           {/* Logo */}
-          <div 
-            onClick={() => {
-              setClientTab('home');
-              setMobileMenuOpen(false);
-              window.scrollTo({ top: 0, behavior: 'smooth' });
-            }}
-            className="flex items-center cursor-pointer group"
-          >
-            <img 
-              src="/Video and photo/Kitabghar logo.png" 
-              alt="किताबघर Logo" 
-              className="h-10 w-10 sm:h-12 sm:w-12 rounded-full object-cover object-center shadow-sm group-hover:scale-105 transition-transform"
-            />
-          </div>
-
-          {/* Desktop Search Bar */}
-          <div className="relative hidden md:block w-80">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => {
-                setSearchQuery(e.target.value);
-                if (e.target.value && clientTab !== 'explore') {
-                  setClientTab('explore');
-                  window.scrollTo({ top: 0, behavior: 'smooth' });
-                }
+            {/* Logo */}
+            <div 
+              onClick={() => {
+                setClientTab('home');
+                setMobileMenuOpen(false);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
               }}
-              placeholder="Search by title, author, or genre..."
-              className="w-full pl-11 pr-4 py-2.5 bg-slate-50 rounded-2xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all"
-            />
-          </div>
+              className="flex items-center cursor-pointer group shrink-0"
+            >
+              <img 
+                src="/Video and photo/Kitabghar logo.png" 
+                alt="किताबघर Logo" 
+                className="h-14 w-14 sm:h-16 sm:w-16 lg:h-18 lg:w-18 rounded-full object-cover object-center shadow-sm group-hover:scale-105 transition-transform"
+              />
+            </div>
+
+            {/* Desktop Search Bar */}
+            <div className="relative hidden md:block w-48 lg:w-56 xl:w-80 transition-all">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => {
+                  setSearchQuery(e.target.value);
+                  if (e.target.value && clientTab !== 'explore') {
+                    setClientTab('explore');
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }
+                }}
+                placeholder="Search by title, author, or genre..."
+                className="w-full pl-11 pr-4 py-2.5 bg-slate-50 rounded-2xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all"
+              />
+            </div>
 
           {/* Desktop Navigation Items & User Controls */}
           <div className="hidden lg:flex items-center gap-1.5 sm:gap-3">
@@ -145,7 +146,7 @@ export default function ClientNavbar({ clientTab, setClientTab, onLogout, curren
               }`}
             >
               <ShoppingBag className="w-4 h-4" />
-              <span className="hidden sm:inline">My Orders</span>
+              <span className="hidden sm:inline whitespace-nowrap">My Orders</span>
               {unreadOrdersCount > 0 && (
                 <span className="bg-amber-500 text-white text-[10px] px-1.5 py-0.5 rounded-full font-bold min-w-[18px] text-center">
                   {unreadOrdersCount}
@@ -184,7 +185,7 @@ export default function ClientNavbar({ clientTab, setClientTab, onLogout, curren
                     className="flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white rounded-lg text-xs font-bold shadow-md shadow-amber-500/20 transition-all active:scale-95 cursor-pointer"
                   >
                     <ShieldCheck className="w-4 h-4" />
-                    Apply for Membership
+                    <span className="whitespace-nowrap">Apply for Membership</span>
                   </button>
                 )}
               </div>
@@ -210,7 +211,7 @@ export default function ClientNavbar({ clientTab, setClientTab, onLogout, curren
                     currentUser?.name ? currentUser.name[0].toUpperCase() : 'U'
                   )}
                 </div>
-                <span className={`text-xs font-semibold hidden lg:inline ${
+                <span className={`text-xs font-semibold hidden lg:inline whitespace-nowrap ${
                   clientTab === 'profile' ? 'text-amber-700' : 'text-slate-700'
                 }`}>
                   {currentUser?.name || 'Customer'}
