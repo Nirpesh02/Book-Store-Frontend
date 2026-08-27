@@ -397,25 +397,6 @@ export default function Cart({ currentUser, onExplore }) {
                       Test ID: <span className="font-bold text-slate-700">9806800001</span> • Pass: <span className="font-bold text-slate-700">Nepal@123</span>
                     </p>
                   </div>
-                  <div className="flex flex-col gap-1">
-                    <button
-                      disabled={isCheckingOut || hasOutOfStockItems || (currentUser?.membershipNumber && storeSettings?.membershipDiscountPercentage > 0 && !isMembershipVerified) || isDeliveryInfoIncomplete}
-                      onClick={() => handleCheckout('Khalti')}
-                      className="w-full py-4 px-4 bg-white hover:bg-slate-50 border-2 border-[#df2028] text-[#df2028] text-sm font-bold rounded-xl shadow-sm transition-all cursor-pointer active:scale-95 flex justify-center items-center gap-2 h-[56px] disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      {isCheckingOut ? (
-                         <div className="w-5 h-5 border-2 border-[#df2028]/20 border-t-[#df2028] rounded-full animate-spin"></div>
-                      ) : (
-                        <>
-                          <Send className="w-4 h-4 ml-0.5 -mt-1 transform rotate-45" fill="currentColor" />
-                          Pay with khalti <span className="text-[9px] -ml-1 mt-1 font-medium tracking-tight">by IME</span>
-                        </>
-                      )}
-                    </button>
-                    <p className="text-[10px] text-center text-slate-400 font-medium py-1">
-                      Testing Mode (Mock)
-                    </p>
-                  </div>
                 </div>
                 <div className="mt-4 p-3 bg-amber-50 rounded-lg border border-amber-200">
                   <p className="text-xs text-amber-700 text-center font-medium flex items-center justify-center gap-1.5">
