@@ -403,6 +403,11 @@ export default function BookDetailsModal({ book: initialBook, isOpen, onClose, c
                   </p>
                 </div>
               </div>
+              <div className="mt-4 p-3 bg-amber-50 rounded-lg border border-amber-200">
+                <p className="text-xs text-amber-700 text-center font-medium flex items-center justify-center gap-1.5">
+                  <span className="text-[14px]">⚠️</span> Note: These payment methods are for testing purposes only. Real transactions will be enabled after the testing phase is complete.
+                </p>
+              </div>
             </div>
           ) : (
             <div className="grid grid-cols-2 gap-3 mt-1">
