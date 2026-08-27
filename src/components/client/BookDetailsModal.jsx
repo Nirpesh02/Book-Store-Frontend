@@ -386,8 +386,7 @@ export default function BookDetailsModal({ book: initialBook, isOpen, onClose, c
                     eSewa
                   </button>
                   <p className="text-[10px] text-center text-slate-500 font-medium bg-slate-100 py-1 rounded border border-slate-200">
-                    Test ID: <span className="font-bold text-slate-700">9806800001</span> • Pass: <span className="font-bold text-slate-700">Nepal@123</span>
-                    <span className="font-bold text-slate-700">• OTP: 123456</span>
+                    Test ID: <span className="font-bold text-slate-700">9806800001</span> • Pass: <span className="font-bold text-slate-700">Nepal@123</span> • OTP: <span className="font-bold text-slate-700">123456</span>
                   </p>
                 </div>
               </div>
