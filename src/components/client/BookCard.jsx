@@ -21,12 +21,21 @@ export default function BookCard({ book, onSelect, onPurchase }) {
           className="h-56 w-full bg-[#f9f4ec] rounded-2xl mb-5 flex items-center justify-center cursor-pointer group-hover:scale-[1.02] transition-transform relative overflow-hidden shadow-inner border border-[#eadac2]/40"
         >
           {book.coverImages && book.coverImages.length > 0 && !imageError ? (
-            <img
-              src={book.coverImages[0]}
-              alt={book.title}
-              className="w-[85%] h-[90%] object-cover shadow-xl rounded-sm"
-              onError={() => setImageError(true)}
-            />
+            (book.coverImages[0].match(/\.(mp4|webm|ogg)$/i) || book.coverImages[0].includes('/video/upload/')) ? (
+              <video
+                src={book.coverImages[0]}
+                className="w-[85%] h-[90%] object-cover shadow-xl rounded-sm"
+                autoPlay loop muted playsInline
+                onError={() => setImageError(true)}
+              />
+            ) : (
+              <img
+                src={book.coverImages[0]}
+                alt={book.title}
+                className="w-[85%] h-[90%] object-cover shadow-xl rounded-sm"
+                onError={() => setImageError(true)}
+              />
+            )
           ) : (
             <div className="w-full h-full bg-gradient-to-br from-[#f4ebd9] to-[#eadac2] flex items-center justify-center">
               <BookOpen className="w-12 h-12 text-[#c28453] opacity-50" />

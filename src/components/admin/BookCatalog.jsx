@@ -63,7 +63,11 @@ export default function BookCatalog({ currentUser }) {
                 <td className="py-3 px-4">
                   <div className="w-10 h-12 rounded-lg bg-slate-100 overflow-hidden shrink-0 border border-slate-200 shadow-sm flex items-center justify-center">
                     {book.coverImages && book.coverImages.length > 0 ? (
-                      <img src={book.coverImages[0]} alt={book.title} className="w-full h-full object-cover" />
+                      (book.coverImages[0].match(/\.(mp4|webm|ogg)$/i) || book.coverImages[0].includes('/video/upload/')) ? (
+                        <video src={book.coverImages[0]} className="w-full h-full object-cover" autoPlay loop muted playsInline />
+                      ) : (
+                        <img src={book.coverImages[0]} alt={book.title} className="w-full h-full object-cover" />
+                      )
                     ) : (
                       <span className="text-slate-400 text-xs">📖</span>
                     )}

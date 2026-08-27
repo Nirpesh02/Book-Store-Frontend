@@ -142,12 +142,21 @@ export default function BookDetailsModal({ book: initialBook, isOpen, onClose, c
                 <>
                   {!imageError ? (
                     <>
-                      <img 
-                        src={coverImages[selectedImageIndex]} 
-                        alt={book.title} 
-                        className="w-full h-full object-cover transition-all group-hover:scale-105" 
-                        onError={() => setImageError(true)}
-                      />
+                      {(coverImages[selectedImageIndex].match(/\.(mp4|webm|ogg)$/i) || coverImages[selectedImageIndex].includes('/video/upload/')) ? (
+                        <video 
+                          src={coverImages[selectedImageIndex]} 
+                          className="w-full h-full object-cover transition-all group-hover:scale-105" 
+                          autoPlay loop muted playsInline
+                          onError={() => setImageError(true)}
+                        />
+                      ) : (
+                        <img 
+                          src={coverImages[selectedImageIndex]} 
+                          alt={book.title} 
+                          className="w-full h-full object-cover transition-all group-hover:scale-105" 
+                          onError={() => setImageError(true)}
+                        />
+                      )}
                       <div className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                         <Maximize2 className="w-8 h-8 text-white" />
                       </div>
@@ -195,7 +204,11 @@ export default function BookDetailsModal({ book: initialBook, isOpen, onClose, c
                       selectedImageIndex === idx ? 'border-amber-500 shadow-md' : 'border-transparent opacity-60 hover:opacity-100'
                     }`}
                   >
-                    <img src={img} alt={`Thumbnail ${idx + 1}`} className="w-full h-full object-cover" />
+                    {(img.match(/\.(mp4|webm|ogg)$/i) || img.includes('/video/upload/')) ? (
+                      <video src={img} className="w-full h-full object-cover" muted playsInline />
+                    ) : (
+                      <img src={img} alt={`Thumbnail ${idx + 1}`} className="w-full h-full object-cover" />
+                    )}
                   </button>
                 ))}
               </div>
@@ -535,12 +548,22 @@ export default function BookDetailsModal({ book: initialBook, isOpen, onClose, c
             </>
           )}
 
-          <img 
-            src={coverImages[selectedImageIndex]} 
-            alt="Fullscreen View" 
-            className="max-w-[95vw] max-h-[80vh] object-contain rounded-xl shadow-2xl transition-all"
-            onClick={(e) => e.stopPropagation()}
-          />
+          {(coverImages[selectedImageIndex].match(/\.(mp4|webm|ogg)$/i) || coverImages[selectedImageIndex].includes('/video/upload/')) ? (
+            <video 
+              src={coverImages[selectedImageIndex]} 
+              controls
+              autoPlay
+              className="max-w-[95vw] max-h-[80vh] object-contain rounded-xl shadow-2xl transition-all"
+              onClick={(e) => e.stopPropagation()}
+            />
+          ) : (
+            <img 
+              src={coverImages[selectedImageIndex]} 
+              alt="Fullscreen View" 
+              className="max-w-[95vw] max-h-[80vh] object-contain rounded-xl shadow-2xl transition-all"
+              onClick={(e) => e.stopPropagation()}
+            />
+          )}
           
           <div className="mt-8 flex gap-4" onClick={(e) => e.stopPropagation()}>
             <button

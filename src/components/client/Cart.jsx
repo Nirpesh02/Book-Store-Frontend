@@ -144,7 +144,11 @@ export default function Cart({ currentUser, onExplore }) {
             <div key={item.bookId} className="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm flex flex-col sm:flex-row gap-6">
               <div className="w-24 h-32 shrink-0 rounded-xl overflow-hidden bg-slate-100 relative">
                 {item.book.coverImages && item.book.coverImages.length > 0 ? (
-                  <img src={item.book.coverImages[0]} alt={item.book.title} className="w-full h-full object-cover" />
+                  (item.book.coverImages[0].match(/\.(mp4|webm|ogg)$/i) || item.book.coverImages[0].includes('/video/upload/')) ? (
+                    <video src={item.book.coverImages[0]} className="w-full h-full object-cover" autoPlay loop muted playsInline />
+                  ) : (
+                    <img src={item.book.coverImages[0]} alt={item.book.title} className="w-full h-full object-cover" />
+                  )
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-slate-300">No Image</div>
                 )}

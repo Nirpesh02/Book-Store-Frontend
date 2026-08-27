@@ -61,7 +61,7 @@ export default function AddBookModal({ isOpen, onClose }) {
         formData.append('folder', folderName);
 
         // 2. Upload using signed details
-        const response = await fetch(`https://api.cloudinary.com/v1_1/${sigData.cloudName}/image/upload`, {
+        const response = await fetch(`https://api.cloudinary.com/v1_1/${sigData.cloudName}/auto/upload`, {
           method: 'POST',
           body: formData
         });
@@ -187,7 +187,7 @@ export default function AddBookModal({ isOpen, onClose }) {
               <div className="relative">
                 <input
                   type="file"
-                  accept="image/*"
+                  accept="image/*,video/*"
                   multiple
                   onChange={handleFileUpload}
                   className="w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-amber-50 file:text-amber-600 hover:file:bg-amber-100 cursor-pointer"
@@ -223,7 +223,11 @@ export default function AddBookModal({ isOpen, onClose }) {
               <div className="flex gap-3 overflow-x-auto pb-2 mt-2">
                 {formData.coverImages.map((imgUrl, index) => (
                   <div key={index} className="relative shrink-0 w-20 h-28 rounded-xl overflow-hidden border border-slate-200 shadow-sm group">
-                    <img src={imgUrl} alt={`Cover preview ${index + 1}`} className="w-full h-full object-cover" />
+                    {(imgUrl.match(/\.(mp4|webm|ogg)$/i) || imgUrl.includes('/video/upload/')) ? (
+                      <video src={imgUrl} className="w-full h-full object-cover" muted playsInline />
+                    ) : (
+                      <img src={imgUrl} alt={`Cover preview ${index + 1}`} className="w-full h-full object-cover" />
+                    )}
                     <button
                       type="button"
                       onClick={() => removeImage(index)}
