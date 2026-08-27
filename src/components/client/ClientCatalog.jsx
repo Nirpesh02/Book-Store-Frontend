@@ -141,25 +141,36 @@ export default function ClientCatalog({ currentUser, onSelectBook, onNavigateToS
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 w-full">
             <div className="space-y-8">
               {/* Top Banner for Discover Page */}
-            <div className="relative w-full py-16 sm:py-20 md:py-24 rounded-[2rem] overflow-hidden mb-8 shadow-sm border border-[#eadac2] flex flex-col items-center justify-center text-center px-4 bg-[#f9f4ec]">
-              {/* Subtle background decoration */}
-              <div className="absolute top-[-20%] left-[-10%] w-72 h-72 bg-[#c28453] opacity-[0.03] rounded-full blur-3xl"></div>
-              <div className="absolute bottom-[-20%] right-[-10%] w-96 h-96 bg-[#8a5a44] opacity-[0.03] rounded-full blur-3xl"></div>
+            <div className="relative w-full py-24 sm:py-32 md:py-40 rounded-[2rem] overflow-hidden mb-8 shadow-md flex flex-col items-center justify-center text-center px-4 group">
+              {/* Video Background */}
+              <video 
+                autoPlay 
+                loop 
+                muted 
+                playsInline 
+                className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
+              >
+                <source src="/Video and photo/video2.mp4" type="video/mp4" />
+              </video>
               
-              <div className="relative z-10 max-w-3xl mx-auto space-y-5">
+              {/* Dark Overlay for Text Readability */}
+              <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-[2px]"></div>
+              
+              {/* Content */}
+              <div className="relative z-10 max-w-3xl mx-auto space-y-6">
                 <div className="flex items-center justify-center gap-4 mb-2">
-                  <span className="w-8 sm:w-16 h-[1.5px] bg-[#c28453]/40"></span>
-                  <span className="text-[10px] sm:text-xs font-bold text-[#b0703f] tracking-[0.25em] uppercase font-sans">
+                  <span className="w-8 sm:w-16 h-[1.5px] bg-[#eadac2]/60"></span>
+                  <span className="text-[10px] sm:text-xs font-bold text-[#eadac2] tracking-[0.25em] uppercase font-sans drop-shadow-sm">
                     Discover The Magic of Words
                   </span>
-                  <span className="w-8 sm:w-16 h-[1.5px] bg-[#c28453]/40"></span>
+                  <span className="w-8 sm:w-16 h-[1.5px] bg-[#eadac2]/60"></span>
                 </div>
                 
-                <h1 className="text-4xl sm:text-5xl md:text-6xl font-serif text-[#3e2723] font-bold tracking-tight leading-[1.1] pb-2">
-                  Bestselling <span className="text-[#a0683a] italic font-medium">Nepali</span> Books
+                <h1 className="text-4xl sm:text-5xl md:text-6xl font-serif text-white font-bold tracking-tight leading-[1.1] pb-2 drop-shadow-xl">
+                  Bestselling <span className="text-[#eadac2] italic font-medium">Nepali</span> Books
                 </h1>
                 
-                <p className="text-[#6d5b53] font-serif text-lg md:text-xl px-4 sm:px-12 leading-relaxed max-w-2xl mx-auto">
+                <p className="text-stone-200 font-serif text-lg md:text-xl px-4 sm:px-12 leading-relaxed max-w-2xl mx-auto drop-shadow-md">
                   Immerse yourself in our handpicked collection of timeless classics, captivating stories, and modern masterpieces that capture the true essence of Nepali literature.
                 </p>
               </div>

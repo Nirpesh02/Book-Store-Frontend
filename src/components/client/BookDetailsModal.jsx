@@ -20,6 +20,7 @@ export default function BookDetailsModal({ book: initialBook, isOpen, onClose, c
   const [deliveryPhone, setDeliveryPhone] = useState('');
   const [deliveryZone, setDeliveryZone] = useState('Store Pickup');
   const [deliveryAddressDetail, setDeliveryAddressDetail] = useState('');
+  const [imageError, setImageError] = useState(false);
 
   const bookId = initialBook?._id || initialBook?.id;
   const book = books.find((b) => (b._id || b.id) === bookId) || initialBook;
@@ -34,8 +35,13 @@ export default function BookDetailsModal({ book: initialBook, isOpen, onClose, c
       setDeliveryPhone('');
       setDeliveryZone('Store Pickup');
       setDeliveryAddressDetail('');
+      setImageError(false);
     }
   }, [isOpen]);
+
+  useEffect(() => {
+    setImageError(false);
+  }, [selectedImageIndex]);
 
   if (!isOpen || !book) return null;
 
@@ -130,14 +136,25 @@ export default function BookDetailsModal({ book: initialBook, isOpen, onClose, c
           <div className="flex flex-col gap-3 shrink-0">
             <div 
               className="w-40 h-56 bg-slate-100 rounded-2xl flex items-center justify-center text-amber-500 overflow-hidden border border-slate-200 shadow-sm cursor-pointer hover:shadow-md transition-shadow relative group"
-              onClick={() => coverImages.length > 0 && setIsFullScreen(true)}
+              onClick={() => coverImages.length > 0 && !imageError && setIsFullScreen(true)}
             >
               {coverImages.length > 0 ? (
                 <>
-                  <img src={coverImages[selectedImageIndex]} alt={book.title} className="w-full h-full object-cover transition-all group-hover:scale-105" />
-                  <div className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                    <Maximize2 className="w-8 h-8 text-white" />
-                  </div>
+                  {!imageError ? (
+                    <>
+                      <img 
+                        src={coverImages[selectedImageIndex]} 
+                        alt={book.title} 
+                        className="w-full h-full object-cover transition-all group-hover:scale-105" 
+                        onError={() => setImageError(true)}
+                      />
+                      <div className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                        <Maximize2 className="w-8 h-8 text-white" />
+                      </div>
+                    </>
+                  ) : (
+                    <BookOpen className="w-10 h-10 text-amber-500/50" />
+                  )}
                   
                   {coverImages.length > 1 && (
                     <>
@@ -163,7 +180,7 @@ export default function BookDetailsModal({ book: initialBook, isOpen, onClose, c
                   )}
                 </>
               ) : (
-                <BookOpen className="w-10 h-10" />
+                <BookOpen className="w-10 h-10 text-amber-500/50" />
               )}
             </div>
             

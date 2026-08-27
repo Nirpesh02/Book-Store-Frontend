@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { BookOpen, CheckCircle, Clock, Heart } from 'lucide-react';
 import { useLibrary } from '../../context/LibraryContext';
 import StarRating from '../common/StarRating';
 
 export default function BookCard({ book, onSelect, onPurchase }) {
   const { getAverageRating, getBookReviews, toggleWishlist, isInWishlist } = useLibrary();
+  const [imageError, setImageError] = useState(false);
   const isAvailable = book.available > 0;
   const bookId = book._id || book.id;
   const avgRating = getAverageRating(bookId);
@@ -19,15 +20,12 @@ export default function BookCard({ book, onSelect, onPurchase }) {
           onClick={() => onSelect(book)}
           className="h-56 w-full bg-[#f9f4ec] rounded-2xl mb-5 flex items-center justify-center cursor-pointer group-hover:scale-[1.02] transition-transform relative overflow-hidden shadow-inner border border-[#eadac2]/40"
         >
-          {book.coverImages && book.coverImages.length > 0 ? (
+          {book.coverImages && book.coverImages.length > 0 && !imageError ? (
             <img
               src={book.coverImages[0]}
               alt={book.title}
               className="w-[85%] h-[90%] object-cover shadow-xl rounded-sm"
-              onError={(e) => {
-                e.target.onerror = null;
-                e.target.style.display = 'none';
-              }}
+              onError={() => setImageError(true)}
             />
           ) : (
             <div className="w-full h-full bg-gradient-to-br from-[#f4ebd9] to-[#eadac2] flex items-center justify-center">
