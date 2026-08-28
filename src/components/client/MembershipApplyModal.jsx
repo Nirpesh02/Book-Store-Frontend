@@ -29,19 +29,22 @@ export default function MembershipApplyModal({ isOpen, onClose }) {
     const setUploading = side === 'front' ? setUploadingFront : side === 'back' ? setUploadingBack : setUploadingPayment;
 
     setUploading(true);
-    const folderName = 'bookverse/membership';
 
     try {
-      const sigData = await uploadAPI.getCloudinarySignature(folderName);
+      const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
+      const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
+
+      if (!cloudName || !uploadPreset) {
+        addToast("Cloudinary configuration missing in .env", "error");
+        setUploading(false);
+        return;
+      }
 
       const formData = new FormData();
       formData.append('file', file);
-      formData.append('api_key', sigData.apiKey);
-      formData.append('timestamp', sigData.timestamp);
-      formData.append('signature', sigData.signature);
-      formData.append('folder', folderName);
+      formData.append('upload_preset', uploadPreset);
 
-      const response = await fetch(`https://api.cloudinary.com/v1_1/${sigData.cloudName}/image/upload`, {
+      const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
         method: 'POST',
         body: formData,
       });

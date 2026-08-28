@@ -62,24 +62,23 @@ export default function EditBookModal({ isOpen, onClose, bookToEdit }) {
     const files = Array.from(e.target.files || []);
     
     setIsLoading(true); // Disable button while uploading
+
+    const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
+    const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
+
+    if (!cloudName || !uploadPreset) {
+      addToast("Cloudinary configuration missing in .env", "error");
+      setIsLoading(false);
+      return;
+    }
     
     for (const file of files) {
       const formData = new FormData();
       formData.append('file', file);
-      
-      const folderName = 'bookverse/books';
+      formData.append('upload_preset', uploadPreset);
       
       try {
-        // 1. Get Signature from backend
-        const sigData = await uploadAPI.getCloudinarySignature(folderName);
-        
-        formData.append('api_key', sigData.apiKey);
-        formData.append('timestamp', sigData.timestamp);
-        formData.append('signature', sigData.signature);
-        formData.append('folder', folderName);
-
-        // 2. Upload using signed details
-        const response = await fetch(`https://api.cloudinary.com/v1_1/${sigData.cloudName}/image/upload`, {
+        const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
           method: 'POST',
           body: formData
         });
