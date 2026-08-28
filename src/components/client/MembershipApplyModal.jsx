@@ -29,22 +29,19 @@ export default function MembershipApplyModal({ isOpen, onClose }) {
     const setUploading = side === 'front' ? setUploadingFront : side === 'back' ? setUploadingBack : setUploadingPayment;
 
     setUploading(true);
+    const folderName = 'bookverse/membership';
 
     try {
-      const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
-      const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
-
-      if (!cloudName || !uploadPreset) {
-        addToast("Cloudinary configuration missing in .env", "error");
-        setUploading(false);
-        return;
-      }
+      const sigData = await uploadAPI.getCloudinarySignature(folderName);
 
       const formData = new FormData();
       formData.append('file', file);
-      formData.append('upload_preset', uploadPreset);
+      formData.append('api_key', sigData.apiKey);
+      formData.append('timestamp', sigData.timestamp);
+      formData.append('signature', sigData.signature);
+      formData.append('folder', folderName);
 
-      const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
+      const response = await fetch(`https://api.cloudinary.com/v1_1/${sigData.cloudName}/image/upload`, {
         method: 'POST',
         body: formData,
       });
@@ -177,7 +174,7 @@ export default function MembershipApplyModal({ isOpen, onClose }) {
               <Camera className="w-4 h-4 text-amber-600" /> Citizenship — Front Side <span className="text-emerald-500 font-bold">*</span>
             </label>
             {citizenshipFront ? (
-              <div className="relative group">
+              <div className="relative">
                 <img
                   src={citizenshipFront}
                   alt="Citizenship Front"
@@ -186,7 +183,7 @@ export default function MembershipApplyModal({ isOpen, onClose }) {
                 <button
                   type="button"
                   onClick={() => setCitizenshipFront('')}
-                  className="absolute top-2 right-2 bg-slate-900/70 text-white p-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                  className="absolute top-2 right-2 bg-slate-900/70 text-white p-1.5 rounded-full transition-opacity cursor-pointer shadow-md"
                 >
                   <X className="w-3.5 h-3.5" />
                 </button>
@@ -224,7 +221,7 @@ export default function MembershipApplyModal({ isOpen, onClose }) {
               <Camera className="w-4 h-4 text-amber-600" /> Citizenship — Back Side <span className="text-emerald-500 font-bold">*</span>
             </label>
             {citizenshipBack ? (
-              <div className="relative group">
+              <div className="relative">
                 <img
                   src={citizenshipBack}
                   alt="Citizenship Back"
@@ -233,7 +230,7 @@ export default function MembershipApplyModal({ isOpen, onClose }) {
                 <button
                   type="button"
                   onClick={() => setCitizenshipBack('')}
-                  className="absolute top-2 right-2 bg-slate-900/70 text-white p-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                  className="absolute top-2 right-2 bg-slate-900/70 text-white p-1.5 rounded-full transition-opacity cursor-pointer shadow-md"
                 >
                   <X className="w-3.5 h-3.5" />
                 </button>
@@ -271,7 +268,7 @@ export default function MembershipApplyModal({ isOpen, onClose }) {
                 <Upload className="w-4 h-4 text-amber-600" /> Payment Screenshot (Rs. 500) <span className="text-emerald-500 font-bold">*</span>
               </label>
               {paymentScreenshot ? (
-                <div className="relative group">
+                <div className="relative">
                   <img
                     src={paymentScreenshot}
                     alt="Payment Screenshot"
@@ -280,7 +277,7 @@ export default function MembershipApplyModal({ isOpen, onClose }) {
                   <button
                     type="button"
                     onClick={() => setPaymentScreenshot('')}
-                    className="absolute top-2 right-2 bg-slate-900/70 text-white p-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                    className="absolute top-2 right-2 bg-slate-900/70 text-white p-1.5 rounded-full transition-opacity cursor-pointer shadow-md"
                   >
                     <X className="w-3.5 h-3.5" />
                   </button>

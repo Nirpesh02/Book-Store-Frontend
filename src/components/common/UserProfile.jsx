@@ -38,22 +38,21 @@ export default function UserProfile() {
   const uploadCroppedImage = async (croppedFile) => {
     setSelectedImageSrc(null); // Close modal
     setIsUploading(true);
+    const folderName = currentUser?.role === 'admin' ? 'bookverse/Admin Profile' : 'bookverse/Client profile picture';
 
     try {
-      const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
-      const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
-
-      if (!cloudName || !uploadPreset) {
-        addToast("Cloudinary configuration missing in .env", "error");
-        setIsUploading(false);
-        return;
-      }
+      // 1. Get Signature from backend
+      const sigData = await uploadAPI.getCloudinarySignature(folderName);
       
       const formDataCloudinary = new FormData();
       formDataCloudinary.append('file', croppedFile);
-      formDataCloudinary.append('upload_preset', uploadPreset);
+      formDataCloudinary.append('api_key', sigData.apiKey);
+      formDataCloudinary.append('timestamp', sigData.timestamp);
+      formDataCloudinary.append('signature', sigData.signature);
+      formDataCloudinary.append('folder', folderName);
 
-      const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
+      // 2. Upload to Cloudinary using signed details
+      const response = await fetch(`https://api.cloudinary.com/v1_1/${sigData.cloudName}/image/upload`, {
         method: 'POST',
         body: formDataCloudinary
       });
