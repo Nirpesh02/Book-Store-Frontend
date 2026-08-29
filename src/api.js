@@ -63,6 +63,8 @@ export const authAPI = {
       method: 'POST',
       body: JSON.stringify({ email }),
     }),
+
+  markNotificationsRead: () => apiRequest('/auth/notifications/read', { method: 'PUT' }),
 };
 
 // ==================== BOOKS API ====================
@@ -213,7 +215,7 @@ export const membershipAPI = {
   apply: (data) => apiRequest('/membership/apply', { method: 'POST', body: JSON.stringify(data) }),
   getPendingRequests: () => apiRequest('/membership/requests'),
   approveRequest: (userId) => apiRequest(`/membership/approve/${userId}`, { method: 'POST' }),
-  rejectRequest: (userId) => apiRequest(`/membership/reject/${userId}`, { method: 'POST' }),
+  rejectRequest: (userId, message) => apiRequest(`/membership/reject/${userId}`, { method: 'POST', body: JSON.stringify({ message }) }),
   removeMembership: (userId) => apiRequest(`/membership/remove/${userId}`, { method: 'POST' }),
 };
 

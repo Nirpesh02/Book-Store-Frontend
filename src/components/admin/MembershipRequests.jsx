@@ -7,6 +7,8 @@ export default function MembershipRequests() {
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedRequest, setSelectedRequest] = useState(null);
+  const [rejectingId, setRejectingId] = useState(null);
+  const [rejectMessage, setRejectMessage] = useState('');
   const { addToast } = useToast();
 
   const fetchRequests = async () => {
@@ -36,15 +38,23 @@ export default function MembershipRequests() {
     }
   };
 
-  const handleReject = async (userId) => {
+  const handleReject = async () => {
+    if (!rejectingId) return;
     try {
-      await membershipAPI.rejectRequest(userId);
+      await membershipAPI.rejectRequest(rejectingId, rejectMessage);
       addToast('Membership request rejected', 'success');
-      setRequests(requests.filter(req => req._id !== userId));
+      setRequests(requests.filter(req => req._id !== rejectingId));
+      setRejectingId(null);
+      setRejectMessage('');
       setSelectedRequest(null);
     } catch (error) {
       addToast(error.message || 'Failed to reject request', 'error');
     }
+  };
+
+  const promptReject = (userId) => {
+    setRejectingId(userId);
+    setRejectMessage('');
   };
 
   if (loading) {
@@ -139,7 +149,7 @@ export default function MembershipRequests() {
 
               <div className="mt-2 flex items-center gap-2">
                 <button
-                  onClick={() => handleReject(request._id)}
+                  onClick={() => promptReject(request._id)}
                   className="flex-1 py-2 bg-slate-100 hover:bg-rose-50 text-slate-600 hover:text-rose-600 text-xs font-bold rounded-xl transition-colors border border-transparent hover:border-rose-200 flex justify-center items-center gap-1.5 cursor-pointer"
                 >
                   <XCircle className="w-4 h-4" /> Reject
@@ -275,7 +285,7 @@ export default function MembershipRequests() {
             {/* Action Buttons */}
             <div className="flex items-center gap-3 pt-4 border-t border-slate-100">
               <button
-                onClick={() => handleReject(selectedRequest._id)}
+                onClick={() => promptReject(selectedRequest._id)}
                 className="flex-1 py-3 bg-slate-100 hover:bg-rose-50 text-slate-600 hover:text-rose-600 text-sm font-bold rounded-xl transition-colors border border-transparent hover:border-rose-200 flex justify-center items-center gap-2 cursor-pointer"
               >
                 <XCircle className="w-5 h-5" /> Reject Application
@@ -285,6 +295,35 @@ export default function MembershipRequests() {
                 className="flex-1 py-3 bg-amber-500 hover:bg-amber-600 text-white text-sm font-bold rounded-xl shadow-lg shadow-amber-500/20 transition-all flex justify-center items-center gap-2 cursor-pointer"
               >
                 <CheckCircle className="w-5 h-5" /> Approve & Generate ID
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* Reject Reason Modal */}
+      {rejectingId && (
+        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex justify-center items-center z-[60] p-4">
+          <div className="bg-white w-full max-w-md rounded-2xl p-6 shadow-2xl relative border border-slate-100">
+            <h3 className="text-lg font-bold text-slate-800 mb-2">Reject Membership</h3>
+            <p className="text-sm text-slate-500 mb-4">Please provide a reason for rejecting this application. This message will be sent to the user.</p>
+            <textarea
+              className="w-full p-3 bg-slate-50 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 min-h-[100px] mb-4"
+              placeholder="e.g. The uploaded citizenship photo is blurry..."
+              value={rejectMessage}
+              onChange={(e) => setRejectMessage(e.target.value)}
+            ></textarea>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => setRejectingId(null)}
+                className="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-bold rounded-xl transition-colors cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleReject}
+                className="flex-1 py-2.5 bg-rose-500 hover:bg-rose-600 text-white text-sm font-bold rounded-xl shadow-lg shadow-rose-500/20 transition-all cursor-pointer"
+              >
+                Confirm Reject
               </button>
             </div>
           </div>
