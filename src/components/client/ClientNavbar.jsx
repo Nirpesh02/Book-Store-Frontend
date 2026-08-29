@@ -144,7 +144,7 @@ export default function ClientNavbar({ clientTab, setClientTab, onLogout, curren
               }`}
             >
               <Heart className="w-4 h-4" fill={clientTab === 'wishlist' ? 'currentColor' : 'none'} />
-              <span className="hidden sm:inline">Wishlist</span>
+              <span className="hidden xl:inline">Wishlist</span>
               {wishlistCount > 0 && (
                 <span className="bg-rose-500 text-white text-[10px] px-1.5 py-0.5 rounded-full font-bold min-w-[18px] text-center">
                   {wishlistCount}
@@ -162,7 +162,7 @@ export default function ClientNavbar({ clientTab, setClientTab, onLogout, curren
               }`}
             >
               <ShoppingCart className="w-4 h-4" />
-              <span className="hidden sm:inline">Cart</span>
+              <span className="hidden xl:inline">Cart</span>
               {cartCount > 0 && (
                 <span className="bg-orange-500 text-white text-[10px] px-1.5 py-0.5 rounded-full font-bold min-w-[18px] text-center">
                   {cartCount}
@@ -179,7 +179,7 @@ export default function ClientNavbar({ clientTab, setClientTab, onLogout, curren
               }`}
             >
               <ShoppingBag className="w-4 h-4" />
-              <span className="hidden sm:inline whitespace-nowrap">My Orders</span>
+              <span className="hidden xl:inline whitespace-nowrap">My Orders</span>
               {unreadOrdersCount > 0 && (
                 <span className="bg-amber-500 text-white text-[10px] px-1.5 py-0.5 rounded-full font-bold min-w-[18px] text-center">
                   {unreadOrdersCount}
@@ -195,7 +195,7 @@ export default function ClientNavbar({ clientTab, setClientTab, onLogout, curren
                 title="Switch to Admin Panel"
               >
                 <ShieldAlert className="w-4 h-4 text-amber-500" />
-                <span className="hidden lg:inline">Admin Panel</span>
+                <span className="hidden xl:inline">Admin Panel</span>
               </button>
             )}
 
@@ -218,7 +218,8 @@ export default function ClientNavbar({ clientTab, setClientTab, onLogout, curren
                     className="flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white rounded-lg text-xs font-bold shadow-md shadow-amber-500/20 transition-all active:scale-95 cursor-pointer"
                   >
                     <ShieldCheck className="w-4 h-4" />
-                    <span className="whitespace-nowrap">Apply for Membership</span>
+                    <span className="hidden xl:inline whitespace-nowrap">Apply for Membership</span>
+                    <span className="xl:hidden whitespace-nowrap">Apply</span>
                   </button>
                 )}
               </div>
@@ -292,7 +293,7 @@ export default function ClientNavbar({ clientTab, setClientTab, onLogout, curren
                     currentUser?.name ? currentUser.name[0].toUpperCase() : 'U'
                   )}
                 </div>
-                <span className={`text-xs font-semibold hidden lg:inline whitespace-nowrap ${
+                <span className={`text-xs font-semibold hidden xl:inline whitespace-nowrap ${
                   clientTab === 'profile' ? 'text-amber-700' : 'text-slate-700'
                 }`}>
                   {currentUser?.name || 'Customer'}
