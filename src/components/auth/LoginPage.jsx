@@ -3,9 +3,11 @@ import { Mail, Lock, Eye, EyeOff, Key, BookOpen, X, ArrowLeft, Copy, Check } fro
 import { useAuth } from '../../context/AuthContext';
 import { authAPI } from '../../api';
 import { auth, provider, signInWithPopup } from '../../firebase';
+import { useToast } from '../../context/ToastContext';
 
 export default function LoginPage() {
   const { login, googleLogin, authError, setAuthError } = useAuth();
+  const { addToast } = useToast();
   
   const [activeTab, setActiveTab] = useState('client');
   const [email, setEmail] = useState('');
@@ -117,14 +119,20 @@ export default function LoginPage() {
       setIsLoading(true);
       
       const user = result.user;
-      const success = await googleLogin(
+      const loginResult = await googleLogin(
         user.displayName,
         user.email,
         user.photoURL
       );
 
-      if (!success) {
+      if (!loginResult || (loginResult && !loginResult.success)) {
         setIsLoading(false);
+      } else if (loginResult && loginResult.success) {
+        if (loginResult.isNewUser) {
+          addToast(`Welcome ${loginResult.name}, to our kitab ghar!`, 'success');
+        } else {
+          addToast(`${loginResult.name}, welcome back to our kitab ghar!`, 'success');
+        }
       }
     } catch (error) {
       console.error("Popup Initialization Error:", error);

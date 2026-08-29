@@ -118,7 +118,7 @@ export function AuthProvider({ children }) {
         notifications: data.notifications || [],
       });
 
-      return true;
+      return { success: true, isNewUser: data.isNewUser, name: data.name };
     } catch (error) {
       setAuthError(error.message || 'Google Sign-In failed!');
       return false;
