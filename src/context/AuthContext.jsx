@@ -37,6 +37,7 @@ export function AuthProvider({ children }) {
           membershipRequestStatus: user.membershipRequestStatus || 'None',
           membershipNumber: user.membershipNumber || null,
           pointsBalance: user.pointsBalance || 0,
+          notifications: user.notifications || [],
         });
       } catch (error) {
         // Token expired or invalid
@@ -79,6 +80,7 @@ export function AuthProvider({ children }) {
         membershipRequestStatus: data.membershipRequestStatus || 'None',
         membershipNumber: data.membershipNumber || null,
         pointsBalance: data.pointsBalance || 0,
+        notifications: data.notifications || [],
       });
 
       return true;
@@ -113,6 +115,7 @@ export function AuthProvider({ children }) {
         membershipRequestStatus: data.membershipRequestStatus || 'None',
         membershipNumber: data.membershipNumber || null,
         pointsBalance: data.pointsBalance || 0,
+        notifications: data.notifications || [],
       });
 
       return true;
@@ -150,6 +153,7 @@ export function AuthProvider({ children }) {
         membershipRequestStatus: updatedUser.membershipRequestStatus || prev?.membershipRequestStatus || 'None',
         membershipNumber: updatedUser.membershipNumber || prev?.membershipNumber || null,
         pointsBalance: updatedUser.pointsBalance || prev?.pointsBalance || 0,
+        notifications: updatedUser.notifications || prev?.notifications || [],
       }));
       return { success: true };
     } catch (error) {
@@ -168,6 +172,7 @@ export function AuthProvider({ children }) {
         tier: user.tier,
         membershipRequestStatus: user.membershipRequestStatus || 'None',
         membershipNumber: user.membershipNumber || null,
+        notifications: user.notifications || [],
       }));
     } catch (error) {
       console.error('Refresh user error:', error);
