@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
+@theme {
+  --breakpoint-lg: 960px;
+}
+
 body {
   @apply bg-slate-100 text-slate-800 antialiased;
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
