@@ -3,6 +3,7 @@ import { X, ShieldCheck, Upload, MapPin, Camera, AlertCircle, Phone, Briefcase, 
 import { membershipAPI, uploadAPI } from '../../api';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
+import { compressImage } from '../../utils/imageCompressor';
 
 export default function MembershipApplyModal({ isOpen, onClose }) {
   const { refreshUser } = useAuth();
@@ -32,10 +33,13 @@ export default function MembershipApplyModal({ isOpen, onClose }) {
     const folderName = 'bookverse/membership';
 
     try {
+      // Compress the image to prevent timeout on mobile network and fix large file sizes
+      const compressedFile = await compressImage(file, 1200, 1200, 0.7);
+      
       const sigData = await uploadAPI.getCloudinarySignature(folderName);
 
       const formData = new FormData();
-      formData.append('file', file);
+      formData.append('file', compressedFile);
       formData.append('api_key', sigData.apiKey);
       formData.append('timestamp', sigData.timestamp);
       formData.append('signature', sigData.signature);
