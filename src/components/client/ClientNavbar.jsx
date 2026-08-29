@@ -229,12 +229,14 @@ export default function ClientNavbar({ clientTab, setClientTab, onLogout, curren
               <div className="relative border-l pl-3 border-slate-200" ref={notifRef}>
                 <button
                   onClick={handleNotificationsClick}
-                  className="p-2 text-slate-500 hover:text-amber-600 hover:bg-amber-50 rounded-xl transition-all cursor-pointer relative"
+                  className="relative p-2 text-slate-500 hover:text-amber-600 hover:bg-amber-50 rounded-xl transition-all cursor-pointer"
                   title="Notifications"
                 >
                   <Bell className="w-5 h-5" />
                   {unreadNotifsCount > 0 && (
-                    <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-rose-500 rounded-full border border-white"></span>
+                    <span className="absolute -top-1 -right-1 bg-rose-500 text-white text-[10px] px-1.5 py-0.5 rounded-full font-bold min-w-[18px] text-center shadow-sm">
+                      {unreadNotifsCount}
+                    </span>
                   )}
                 </button>
 
