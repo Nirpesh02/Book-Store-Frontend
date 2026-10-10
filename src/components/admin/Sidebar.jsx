@@ -8,12 +8,12 @@ export default function Sidebar({ activeTab, setActiveTab, currentUser, onLogout
     { id: 'users', label: 'Customers', icon: Users },
     { id: 'history', label: 'Order History', icon: History },
     { id: 'reviews', label: 'Customer Reviews', icon: Star },
+    { id: 'settings', label: 'Store Settings', icon: Settings },
   ];
 
   if (currentUser?.adminType === 'permanent') {
     menuItems.push({ id: 'subadmins', label: 'Sub-Admins', icon: UserCog });
     menuItems.push({ id: 'membership', label: 'Memberships', icon: ShieldCheck });
-    menuItems.push({ id: 'settings', label: 'Store Settings', icon: Settings });
   }
 
   const initials = currentUser?.name

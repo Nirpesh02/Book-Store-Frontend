@@ -13,6 +13,12 @@ import ReligiousBooksSection from './ReligiousBooksSection';
 import FilterDrawer from './FilterDrawer';
 import ManagerMessage from './ManagerMessage';
 import Recommendation from './Recommendation';
+import TrendingNow from './TrendingNow';
+import BookOfTheWeek from './BookOfTheWeek';
+import HotDeals from './HotDeals';
+import NewArrivals from './NewArrivals';
+import ClientReviewsWall from './ClientReviewsWall';
+import AuthorSpotlight from './AuthorSpotlight';
 
 export default function ClientCatalog({ currentUser, onSelectBook, onNavigateToStory, clientTab, onNavigateToDiscover }) {
   const { books, purchaseBook, searchQuery, setSearchQuery } = useLibrary();
@@ -66,7 +72,7 @@ export default function ClientCatalog({ currentUser, onSelectBook, onNavigateToS
     }
   });
 
-  const visibleBooks = showAllBooks ? processedBooks : processedBooks.slice(0, 8);
+  const visibleBooks = showAllBooks ? processedBooks : processedBooks.slice(0, 6);
 
   const handlePurchase = async (bookId) => {
     const book = books.find((b) => (b._id || b.id) === bookId);
@@ -103,7 +109,13 @@ export default function ClientCatalog({ currentUser, onSelectBook, onNavigateToS
         <div className="w-full flex flex-col">
           <ClientHero onExplore={onNavigateToDiscover} onStoryClick={onNavigateToStory} newestBook={newestBook} />
           <ClientExperience onStoryClick={onNavigateToStory} />
+          
+          <AuthorSpotlight onSelectBook={onSelectBook} onPurchaseBook={handlePurchase} />
+          
           <ClientEthos />
+          
+          <ClientReviewsWall onSelectBook={onSelectBook} />
+          
           <ClientHeritage />
           <ClientCommunity />
           <ClientStatsChart />
@@ -187,7 +199,7 @@ export default function ClientCatalog({ currentUser, onSelectBook, onNavigateToS
                       Explore Our Collection
                     </h2>
                     <p className="text-sm text-stone-500 mt-2 italic font-serif">
-                      Showing {processedBooks.length} beautifully bound volumes
+                      Showing {visibleBooks.length} of {processedBooks.length} beautifully bound volumes
                     </p>
                   </div>
                   
@@ -203,7 +215,7 @@ export default function ClientCatalog({ currentUser, onSelectBook, onNavigateToS
                 {/* Grid of Books */}
                 {processedBooks.length > 0 ? (
                   <div className="space-y-12">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
                       {visibleBooks.map((book) => (
                         <BookCard
                           key={book._id || book.id}
@@ -214,7 +226,7 @@ export default function ClientCatalog({ currentUser, onSelectBook, onNavigateToS
                       ))}
                     </div>
                     
-                    {!showAllBooks && processedBooks.length > 8 && (
+                    {!showAllBooks && processedBooks.length > 6 && (
                       <div className="flex justify-center pt-2 pb-8">
                         <button
                           onClick={() => setShowAllBooks(true)}
@@ -248,6 +260,18 @@ export default function ClientCatalog({ currentUser, onSelectBook, onNavigateToS
             </div>
           </div>
 
+          {/* Book of the Week Spotlight */}
+          <BookOfTheWeek onSelectBook={onSelectBook} onPurchaseBook={handlePurchase} />
+
+          {/* Trending Now Section */}
+          <TrendingNow onSelectBook={onSelectBook} onPurchaseBook={handlePurchase} />
+
+          {/* Hot Deals Section */}
+          <HotDeals onSelectBook={onSelectBook} onPurchaseBook={handlePurchase} />
+
+          {/* New Arrivals Section */}
+          <NewArrivals onSelectBook={onSelectBook} onPurchaseBook={handlePurchase} />
+
           {/* Recommendation Section */}
           <Recommendation 
             currentUser={currentUser} 
@@ -255,7 +279,7 @@ export default function ClientCatalog({ currentUser, onSelectBook, onNavigateToS
             onPurchaseBook={handlePurchase} 
           />
 
-          {/* Religious Books Section (Fifth) */}
+          {/* Religious Books Section */}
           <ReligiousBooksSection onSelectBook={onSelectBook} onPurchaseBook={handlePurchase} />
         </>
       )}

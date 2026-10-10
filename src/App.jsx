@@ -48,6 +48,7 @@ function MainLayout() {
   // Client Tabs
   const [clientTab, setClientTab] = useState('home');
   const [selectedBook, setSelectedBook] = useState(null);
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
   // eSewa Callback Route Handling
   if (window.location.pathname === '/payment-success') {
@@ -77,25 +78,42 @@ function MainLayout() {
   if (effectiveMode === 'admin' && currentUser.role === 'admin') {
 
     return (
-      <div className="flex h-screen overflow-hidden bg-slate-100 p-3 sm:p-5 gap-6">
-        <Sidebar activeTab={adminTab} setActiveTab={setAdminTab} currentUser={currentUser} onLogout={logout} />
+      <div className="flex h-screen overflow-hidden bg-slate-100 sm:p-5 gap-6 relative">
+        {/* Mobile overlay */}
+        {isMobileSidebarOpen && (
+          <div 
+            className="fixed inset-0 bg-slate-900/50 z-40 lg:hidden"
+            onClick={() => setIsMobileSidebarOpen(false)}
+          />
+        )}
 
-        <main className="flex-1 flex flex-col min-w-0 overflow-hidden">
-          <div className="mb-2 flex justify-between items-center">
+        {/* Sidebar container */}
+        <div className={`fixed lg:static inset-y-0 left-0 z-50 transform transition-transform duration-300 ease-in-out ${isMobileSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
+          <Sidebar activeTab={adminTab} setActiveTab={(tab) => { setAdminTab(tab); setIsMobileSidebarOpen(false); }} currentUser={currentUser} onLogout={logout} />
+        </div>
+
+        <main className="flex-1 flex flex-col min-w-0 overflow-hidden px-3 sm:px-0 pt-3 sm:pt-0">
+          <div className="mb-2 flex flex-wrap gap-2 justify-between items-center">
             <div className="flex items-center gap-2">
-              <span className="text-xs bg-amber-100 text-amber-800 font-bold px-3 py-1 rounded-full">
-                Admin Panel: {currentUser.name}
+              <button 
+                onClick={() => setIsMobileSidebarOpen(true)}
+                className="lg:hidden p-1.5 rounded-lg bg-white shadow-sm border border-slate-200 text-slate-600 hover:bg-slate-50"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+              </button>
+              <span className="text-[10px] sm:text-xs bg-amber-100 text-amber-800 font-bold px-2 sm:px-3 py-1 rounded-full whitespace-nowrap">
+                Admin: {currentUser.name?.split(' ')[0]}
               </span>
               <button
                 onClick={() => setViewMode('client')}
-                className="text-xs font-semibold px-3 py-1 bg-blue-50 text-blue-600 rounded-full border border-blue-200 hover:bg-blue-600 hover:text-white transition-all cursor-pointer"
+                className="text-[10px] sm:text-xs font-semibold px-2 sm:px-3 py-1 bg-blue-50 text-blue-600 rounded-full border border-blue-200 hover:bg-blue-600 hover:text-white transition-all cursor-pointer whitespace-nowrap"
               >
-                👁 Preview Store View
+                👁 Preview
               </button>
             </div>
             <button
               onClick={logout}
-              className="text-xs font-semibold px-3 py-1.5 bg-rose-50 text-rose-600 rounded-lg border border-rose-200 hover:bg-rose-600 hover:text-white transition-all cursor-pointer"
+              className="text-[10px] sm:text-xs font-semibold px-2 sm:px-3 py-1.5 bg-rose-50 text-rose-600 rounded-lg border border-rose-200 hover:bg-rose-600 hover:text-white transition-all cursor-pointer whitespace-nowrap"
             >
               Sign Out
             </button>
@@ -113,7 +131,7 @@ function MainLayout() {
             {adminTab === 'reviews' && <AdminReviews />}
             {adminTab === 'subadmins' && currentUser?.adminType === 'permanent' && <SubAdminManagement />}
             {adminTab === 'membership' && currentUser?.adminType === 'permanent' && <MembershipRequests />}
-            {adminTab === 'settings' && currentUser?.adminType === 'permanent' && <StoreSettings />}
+            {adminTab === 'settings' && <StoreSettings />}
             {adminTab === 'profile' && <UserProfile />}
           </div>
         </main>
